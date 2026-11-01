@@ -23,7 +23,7 @@ loaded by `Load_<level>`): `nj`, `ny`, `fl`, `sd`, `hi`, `vc`, `sj`, `ru`, `vn`,
 ports load too. A name THUG2 already uses keeps the `thug1_` prefix (`thug1_sc`, `thug1_dj`, `thug1_ph`,
 `thug1_testlevel`: THUG2 has SC, DJ, PH, TestLevel of its own), as do the levels THUG1 doesn't load by their own
 name (`thug1_nj_skateshop`, `thug1_skateshop`, `thug1_cas_bedroom`). Hotter Than Hell (THUG1's SE - THUG2's SE is
-its own) is `hh`, THUGPRO's choice: TP-30 in the compatibility register (thug2-level-converter-core/compat/thugpro). `--compat none`
+its own) is `hh`, THUGPRO's choice: TP-30 in the compatibility register (thug2-thugpro-compat/thugpro). `--compat none`
 leaves the register out (`thug1_se`); `--legacy-names` names every level `thug1_<code>` as before. Name levels to convert only some (`convert NJ SE`). The default is the 9 main levels (NJ, NY, FL, SD,
 HI, VC, SJ, RU, SE = Hotter Than Hell), the 6 classic ones (SC Old School, DJ Old Downhill Jam, PH Old Philly, VN Old
 Venice, HN Old Hangar, SC2 School II) and NJ_Skateshop; `skateshop` (THPS4's shop again), `CAS_BEDROOM` and
@@ -116,5 +116,5 @@ frame is THUG1's own on both sides).
 `thugpro_compare.ts --details` also lists THUGPRO's hand edits against THUG1's own data, by kind (`thugpro_edits.ts`
 `inventory`: nodes moved / renamed / reused / added / removed / changed with the keys and flags that changed, level
 scripts, scene sectors, collision objects and face flags). `thugpro_compare.ts --extract-thugpro` writes THUGPRO's
-spawn edits into the compatibility profile (TP-31: `thug2-level-converter-core/compat/thugpro/thug1_levels.json` `spawns`), which
+spawn edits into the compatibility profile (TP-31: `thug2-thugpro-compat/thugpro/thug1_levels.json` `spawns`), which
 `convert` applies (`applySpawns`); the comparison's `spawns` column checks the result (names, places, order).

@@ -20,8 +20,6 @@ import { spawnSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import * as compat from "thug2-level-converter-core/compat/compat.ts";
-import * as handEdits from "thug2-level-converter-core/compat/hand_edits.ts";
 import { FormatError } from "thug2-level-converter-core/level_port/binio.ts";
 import * as common from "thug2-level-converter-core/level_port/common.ts";
 import * as geometry from "thug2-level-converter-core/level_port/geometry.ts";
@@ -37,6 +35,8 @@ import * as thug2Scene from "thug2-level-converter-core/level_port/thug2_scene.t
 import { parseConverterArgs } from "thug2-level-converter-core/lib/converter_args.ts";
 import { resolveInstall } from "thug2-level-converter-core/lib/install.ts";
 import { hex8, isMain, print, pyExit, pyJoin, pyRepr, runMain } from "thug2-level-converter-core/lib/py.ts";
+import * as handEdits from "thug2-thugpro-compat/hand_edits.ts";
+import * as compat from "thug2-thugpro-compat/profile.ts";
 import { applyTextEdits, DRIVING_EDITS } from "./driving.ts";
 import * as portChanges from "./port_changes.ts";
 import * as thug1 from "./thug1.ts";
@@ -129,7 +129,7 @@ interface Args {
 // scripts) and a level THUG1's Levels.qb doesn't load by its own name (NJ_Skateshop, the front end's skateshop,
 // CAS_BEDROOM) keep the thug1_ prefix: Levels.qb would otherwise replace THUG2's own level. What THUGPRO chose beyond
 // that (Hotter Than Hell as hh: THUG1's SE is THUG2's SE) is in the compatibility profile
-// thug2-level-converter-core/compat/thugpro/thug1_levels.json (TP-30...; --compat none leaves it out). --legacy-names: thug1_<code> for
+// thug2-thugpro-compat/thugpro/thug1_levels.json (TP-30...; --compat none leaves it out). --legacy-names: thug1_<code> for
 // every level, as this converter named them before.
 export const COMPAT = {
     levelNames: new Map<string, string>(),
@@ -141,7 +141,7 @@ export const COMPAT = {
     portChanges: portChanges.load(),
 };
 
-// The compatibility profile's THUG1 data (thug2-level-converter-core/compat/compat.ts): "thugpro" (the default) or "none". thugproNew: false
+// The compatibility profile's THUG1 data (thug2-thugpro-compat/profile.ts): "thugpro" (the default) or "none". thugproNew: false
 // leaves the profile's thugpro_new out (--no-thugpro-new); ownChanges: false switches our own changes that aren't
 // required off (--no-port-changes).
 export function setCompat(name: string, thugproNew_ = true, ownChanges = true): void {
@@ -198,7 +198,7 @@ function applyOverrides(): void {
     }
 }
 
-// --- TP-31: THUGPRO's network spawns (thug2-level-converter-core/compat/thugpro/thug1_levels.json "spawns") ------------------------------
+// --- TP-31: THUGPRO's network spawns (thug2-thugpro-compat/thugpro/thug1_levels.json "spawns") ------------------------------
 //
 // THUG2 starts player n at the n-th Multiplayer restart of the node array and respawns at one of the first 8 (Skate
 // 0x00566100 -> GetRestartNode 0x0046B790; CSkater::MoveToRandomRestart 0x00580830: Rnd(8)), so for both sides to

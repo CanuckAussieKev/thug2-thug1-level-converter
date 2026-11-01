@@ -1,7 +1,7 @@
 // NOT ORIGINAL - what is NEW in THUGPRO's ports of THUG1's levels: content THUGPRO made that is in no source game's
 // level (THUG1's, or THUG2's for the same place) - its models, nodes, level scripts and host-toggled level files. Morten
 // (THUGPRO's author) agreed to the user that our ports may include it (2026-10-20); the user's decision: all of it in
-// ONE separate section of the differences file, `thugpro_new` in thug2-level-converter-core/compat/thugpro/thug1_levels.json, apart from the
+// ONE separate section of the differences file, `thugpro_new` in thug2-thugpro-compat/thugpro/thug1_levels.json, apart from the
 // hand edits that are data (TP-30 ... TP-39), so that it is easily identifiable (README.md there: "New in THUGPRO (not
 // in any source game)", TPN-THUG1-1 ... TPN-THUG1-4).
 //
@@ -32,14 +32,14 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as zlib from "node:zlib";
-import type * as compat from "thug2-level-converter-core/compat/compat.ts";
-import * as handEdits from "thug2-level-converter-core/compat/hand_edits.ts";
 import { FormatError } from "thug2-level-converter-core/level_port/binio.ts";
 import * as prx from "thug2-level-converter-core/level_port/prx.ts";
 import * as qb from "thug2-level-converter-core/level_port/qb.ts";
 import { Name, type QbValue, Struct } from "thug2-level-converter-core/level_port/qb.ts";
 import * as scriptPort from "thug2-level-converter-core/level_port/script_port.ts";
 import { pack } from "thug2-level-converter-core/lib/struct.ts";
+import * as handEdits from "thug2-thugpro-compat/hand_edits.ts";
+import type * as compat from "thug2-thugpro-compat/profile.ts";
 import type { Op } from "./port_changes.ts";
 import { LEFT_OUT_PREFIXES } from "./thug1_port.ts";
 import { isSpawn, nodeName, type Side } from "./thugpro_edits.ts";

@@ -4,10 +4,10 @@
 
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import * as compat from "thug2-level-converter-core/compat/compat.ts";
 import { checksum, Name, type QbValue, Struct, Vector } from "thug2-level-converter-core/level_port/qb.ts";
 import type * as scriptPort from "thug2-level-converter-core/level_port/script_port.ts";
 import { pack } from "thug2-level-converter-core/lib/struct.ts";
+import * as compat from "thug2-thugpro-compat/profile.ts";
 import * as portChanges from "./port_changes.ts";
 import type { Side } from "./thugpro_edits.ts";
 import {

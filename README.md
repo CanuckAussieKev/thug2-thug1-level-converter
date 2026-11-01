@@ -17,7 +17,8 @@ what is converted and what isn't: [thug1_levels/README.md](thug1_levels/README.m
 
 Each pinned to a tagged commit in package.json (`git+https://git@github.com/...#<commit>`; one copy of each: every repository that uses one pins the same commit):
 
-- [thug2-level-converter-core](https://github.com/CanuckAussieKev/thug2-level-converter-core): THUG2's formats (scenes, collision, textures, archives, scripts), the level port's common steps and the THUGPRO compatibility register. THUG1's own formats are read here; THUGPRO's hand edits to its THUG1 levels are applied with core's `compat/hand_edits.ts` (the content pipeline applies the same edit sections to THUG2's own levels).
+- [thug2-level-converter-core](https://github.com/CanuckAussieKev/thug2-level-converter-core): THUG2's formats (scenes, collision, textures, archives, scripts), the level port's common steps. THUG1's own formats are read here.
+- [thug2-thugpro-compat](https://github.com/CanuckAussieKev/thug2-thugpro-compat): the THUGPRO compatibility profile (`--compat`): the register's THUG1 data - spawns, THUGPRO's hand edits (applied with its `hand_edits.ts`; the content pipeline applies the same edit sections to THUG2's own levels), THUGPRO's own content by reference - and its port changes; `thug1_levels/thugpro_compare.ts --extract-thugpro` rewrites it (in a clone of that repository).
 
 ## Public API
 
@@ -53,4 +54,4 @@ Checks: `npm run typecheck`, `npm run lint`, `npm test` (the tests that need a g
 
 ## Versions
 
-Releases are tagged `v<major>.<minor>.<patch>`; this is `v1.0.0`. The repositories that use it pin the tagged commit.
+Releases are tagged `v<major>.<minor>.<patch>`; this is `v1.1.0` (THUGPRO's profile from thug2-thugpro-compat; core v2.0.0). The repositories that use it pin the tagged commit.

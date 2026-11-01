@@ -19,7 +19,7 @@
 //   node thug1_levels/thugpro_compare.ts [levels...] [--thug2 C:\Games\THUG2-3] [--thug1 C:\Games\THUG1]
 //        [--thugpro <dir>] [--staging <dir>] [--legacy-names] [--compat thugpro|none] [--json out] [--details]
 //   node thug1_levels/thugpro_compare.ts --extract-thugpro [levels...]
-//        (writes THUGPRO's edits into thug2-level-converter-core/compat/thugpro/thug1_levels.json - never typed in: TP-31's "spawns"
+//        (writes THUGPRO's edits into thug2-thugpro-compat/thugpro/thug1_levels.json - never typed in: TP-31's "spawns"
 //        (thugpro_edits.spawnEdits), TP-32 ... TP-39's sections (thugpro_edits.handEdits) and thugpro_new (thugpro_new.extract,
 //        against --staging's converted levels); prints what it leaves out
 //        and why: translation by THUGPRO's toolchain, THUGPRO's own content)
@@ -27,20 +27,6 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import * as compat from "thug2-level-converter-core/compat/compat.ts";
-import { checkEdits, editCounts, SECTIONS, type SectionCheck } from "thug2-level-converter-core/compat/hand_edits.ts";
-import {
-    CTF_NAMES,
-    isCrown,
-    isMpRestart,
-    maxDiff,
-    nameOf,
-    nodeArray,
-    position,
-    sameSequence,
-    sequence,
-    TOLERANCE,
-} from "thug2-level-converter-core/compat/thugpro_nodes.ts";
 import * as colCheck from "thug2-level-converter-core/level_port/col_check.ts";
 import * as prx from "thug2-level-converter-core/level_port/prx.ts";
 import * as qb from "thug2-level-converter-core/level_port/qb.ts";
@@ -61,6 +47,20 @@ import {
     runMain,
     writeTextPy,
 } from "thug2-level-converter-core/lib/py.ts";
+import { checkEdits, editCounts, SECTIONS, type SectionCheck } from "thug2-thugpro-compat/hand_edits.ts";
+import * as compat from "thug2-thugpro-compat/profile.ts";
+import {
+    CTF_NAMES,
+    isCrown,
+    isMpRestart,
+    maxDiff,
+    nameOf,
+    nodeArray,
+    position,
+    sameSequence,
+    sequence,
+    TOLERANCE,
+} from "thug2-thugpro-compat/thugpro_nodes.ts";
 import { BY_CODE, COMPAT, LEVELS, levelNames, levelStructs, prePath, STAGING, setCompat } from "./thug1_levels.ts";
 import {
     handEdits,
@@ -336,7 +336,7 @@ const OPTIONS = {
     "extract-thugpro": { type: "boolean" },
 } as const;
 
-export const PROFILE_FILE = compat.profileFile("thug1_levels"); // (thug2-level-converter-core's compat/thugpro)
+export const PROFILE_FILE = compat.profileFile("thug1_levels"); // (thug2-thugpro-compat's thugpro/)
 
 // The THUGPRO port's key (its data\pre\<key>_scripts.prx) of every THUG1 level THUGPRO ports, by THUG1 code.
 function portKeys(thug1: string, thugpro: string, codes: readonly string[]): Map<string, string> {
