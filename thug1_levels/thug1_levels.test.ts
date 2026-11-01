@@ -3,8 +3,8 @@
 
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { checksum, Name, Struct, Vector } from "../level_port/qb.ts";
-import { zfightGates } from "../level_port/zfight_gate.ts";
+import { checksum, Name, Struct, Vector } from "thug2-level-converter-core/level_port/qb.ts";
+import { zfightGates } from "thug2-level-converter-core/level_port/zfight_gate.ts";
 import { applyTextEdits, DRIVING_EDITS } from "./driving.ts";
 import * as portChanges from "./port_changes.ts";
 import { applySpawns, COMPAT, levelName, ownName, setCompat, skyName } from "./thug1_levels.ts";
@@ -123,7 +123,7 @@ test("PC-THUG1-22 applyTextEdits: each THUG1 text replaced once, CRLF read as LF
     for (const file of portChanges.drivingFiles(portChanges.load())) assert.ok(DRIVING_EDITS[file.toLowerCase()]);
 });
 
-// z-fighting gates (tools/pipeline/level_port/zfight_gate.ts): each level as the converter wrote and resolved it, at most
+// z-fighting gates (thug2-level-converter-core/level_port/zfight_gate.ts): each level as the converter wrote and resolved it, at most
 // what it was when the gate was set (2026-10-25, C:\Games\THUG2-4) - skipped
 // where there is no such conversion (THUG2_ZFIGHT_GAME: the game folder, default the main install).
 zfightGates("thug1", {

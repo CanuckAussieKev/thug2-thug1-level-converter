@@ -1,8 +1,8 @@
 // NOT ORIGINAL - converts Tony Hawk's Underground (PC) levels to THUG2's formats so that THUG2 can load and play them
 // (see README.md). Nothing of either game is stored in the repo: the files are made from the user's own copies.
 //
-//   node tools/pipeline/thug1_levels/thug1_levels.ts selfcheck [--thug2 C:\Games\THUG2] [--thug1 C:\Games\THUG1]
-//   node tools/pipeline/thug1_levels/thug1_levels.ts convert [levels...] [--thug2 ...] [--thug1 ...] [--out <folder>]
+//   node thug1_levels/thug1_levels.ts selfcheck [--thug2 C:\Games\THUG2] [--thug1 C:\Games\THUG1]
+//   node thug1_levels/thug1_levels.ts convert [levels...] [--thug2 ...] [--thug1 ...] [--out <folder>]
 //        [--compat thugpro|none] [--legacy-names] [--thugpro <THUGPRO's install>] [--no-thugpro-new] [--no-port-changes]
 //        [--thug2-peds]
 //   then: node tools/pipeline/menu_level/make_menu_level.ts   (installs them into the data overlay, with level select signs)
@@ -11,31 +11,31 @@
 // and writes <thug2>\thug2-decomp-thug1\ (not read by the game): levels\<name>\<name>.scn.xbx / .tex.xbx / .col.xbx /
 // .qb (the node array; <name>: levelName - nj, hh, thug1_sc...), the skies (scene and textures) the same way, and
 // levels.json (what
-// make_menu_level.ts adds to Levels.qb and the level select: tools/pipeline/level_port/ported_levels.ts).
+// make_menu_level.ts adds to Levels.qb and the level select: thug2-level-converter-core/level_port/ported_levels.ts).
 //
-// The THUG2 formats, the geometry conversion, the node arrays and the installing are shared with tools/pipeline/thps4_levels
-// (tools/pipeline/level_port); this folder has THUG1's own formats (thug1.ts) and its levels.
+// The THUG2 formats, the geometry conversion, the node arrays and the installing are shared with thug2-thps4-level-converter/thps4_levels
+// (thug2-level-converter-core/level_port); this folder has THUG1's own formats (thug1.ts) and its levels.
 
 import { spawnSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import * as compat from "../compat/compat.ts";
-import { FormatError } from "../level_port/binio.ts";
-import * as common from "../level_port/common.ts";
-import * as geometry from "../level_port/geometry.ts";
-import * as nodes from "../level_port/nodes.ts";
-import * as portedLevels from "../level_port/ported_levels.ts";
-import * as prx from "../level_port/prx.ts";
-import * as qb from "../level_port/qb.ts";
-import { Name, Struct } from "../level_port/qb.ts";
-import * as scriptCheck from "../level_port/script_check.ts";
-import * as scriptPort from "../level_port/script_port.ts";
-import * as tex from "../level_port/tex.ts";
-import * as thug2Scene from "../level_port/thug2_scene.ts";
-import { parseConverterArgs } from "../lib/converter_args.ts";
-import { resolveInstall } from "../lib/install.ts";
-import { hex8, isMain, print, pyExit, pyJoin, pyRepr, runMain } from "../lib/py.ts";
+import * as compat from "thug2-level-converter-core/compat/compat.ts";
+import { FormatError } from "thug2-level-converter-core/level_port/binio.ts";
+import * as common from "thug2-level-converter-core/level_port/common.ts";
+import * as geometry from "thug2-level-converter-core/level_port/geometry.ts";
+import * as nodes from "thug2-level-converter-core/level_port/nodes.ts";
+import * as portedLevels from "thug2-level-converter-core/level_port/ported_levels.ts";
+import * as prx from "thug2-level-converter-core/level_port/prx.ts";
+import * as qb from "thug2-level-converter-core/level_port/qb.ts";
+import { Name, Struct } from "thug2-level-converter-core/level_port/qb.ts";
+import * as scriptCheck from "thug2-level-converter-core/level_port/script_check.ts";
+import * as scriptPort from "thug2-level-converter-core/level_port/script_port.ts";
+import * as tex from "thug2-level-converter-core/level_port/tex.ts";
+import * as thug2Scene from "thug2-level-converter-core/level_port/thug2_scene.ts";
+import { parseConverterArgs } from "thug2-level-converter-core/lib/converter_args.ts";
+import { resolveInstall } from "thug2-level-converter-core/lib/install.ts";
+import { hex8, isMain, print, pyExit, pyJoin, pyRepr, runMain } from "thug2-level-converter-core/lib/py.ts";
 import { applyTextEdits, DRIVING_EDITS } from "./driving.ts";
 import * as handEdits from "./hand_edits.ts";
 import * as portChanges from "./port_changes.ts";
@@ -129,7 +129,7 @@ interface Args {
 // scripts) and a level THUG1's Levels.qb doesn't load by its own name (NJ_Skateshop, the front end's skateshop,
 // CAS_BEDROOM) keep the thug1_ prefix: Levels.qb would otherwise replace THUG2's own level. What THUGPRO chose beyond
 // that (Hotter Than Hell as hh: THUG1's SE is THUG2's SE) is in the compatibility profile
-// tools/pipeline/compat/thugpro/thug1_levels.json (TP-30...; --compat none leaves it out). --legacy-names: thug1_<code> for
+// thug2-level-converter-core/compat/thugpro/thug1_levels.json (TP-30...; --compat none leaves it out). --legacy-names: thug1_<code> for
 // every level, as this converter named them before.
 export const COMPAT = {
     levelNames: new Map<string, string>(),
@@ -141,7 +141,7 @@ export const COMPAT = {
     portChanges: portChanges.load(),
 };
 
-// The compatibility profile's THUG1 data (tools/pipeline/compat/compat.ts): "thugpro" (the default) or "none". thugproNew: false
+// The compatibility profile's THUG1 data (thug2-level-converter-core/compat/compat.ts): "thugpro" (the default) or "none". thugproNew: false
 // leaves the profile's thugpro_new out (--no-thugpro-new); ownChanges: false switches our own changes that aren't
 // required off (--no-port-changes).
 export function setCompat(name: string, thugproNew_ = true, ownChanges = true): void {
@@ -198,7 +198,7 @@ function applyOverrides(): void {
     }
 }
 
-// --- TP-31: THUGPRO's network spawns (tools/pipeline/compat/thugpro/thug1_levels.json "spawns") ------------------------------
+// --- TP-31: THUGPRO's network spawns (thug2-level-converter-core/compat/thugpro/thug1_levels.json "spawns") ------------------------------
 //
 // THUG2 starts player n at the n-th Multiplayer restart of the node array and respawns at one of the first 8 (Skate
 // 0x00566100 -> GetRestartNode 0x0046B790; CSkater::MoveToRandomRestart 0x00580830: Rnd(8)), so for both sides to
@@ -1227,7 +1227,7 @@ export function main(argv: readonly string[] = process.argv.slice(2)): number {
             ns: { kind: "string", default: common.NS },
             static: { kind: "flag" },
             extra: { kind: "list" },
-            // compatibility profile (tools/pipeline/compat): thugpro - level names as THUGPRO's THUG1 ports (default), or none
+            // compatibility profile (thug2-level-converter-core/compat): thugpro - level names as THUGPRO's THUG1 ports (default), or none
             compat: { kind: "string", default: "thugpro" },
             "legacy-names": { kind: "flag" }, // thug1_<code> for every level, as before
             // what is new in THUGPRO (thugpro_new: TPN-THUG1-1 ... TPN-THUG1-4) is read from its install; --no-thugpro-new leaves
@@ -1263,7 +1263,7 @@ export function main(argv: readonly string[] = process.argv.slice(2)): number {
         );
         pyExit(2);
     }
-    // (the install root or the game folder itself: C:\Games\THUG2 -> C:\Games\THUG2\Game - tools/pipeline/lib/install.ts)
+    // (the install root or the game folder itself: C:\Games\THUG2 -> C:\Games\THUG2\Game - thug2-level-converter-core/lib/install.ts)
     args.thug2 = resolveInstall(args.thug2, "thug2");
     if (args.command === "selfcheck") return cmdSelfcheck(args);
     cmdConvert(args);

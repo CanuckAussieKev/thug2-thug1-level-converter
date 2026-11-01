@@ -1,7 +1,7 @@
 // NOT ORIGINAL - the THUG1 campaign survey's script gap: every CFunction,
 // member function, script and global THUG1's scripts call or read, checked against THUG2.
 //
-//   node tools/pipeline/thug1_campaign/script_gap.ts [--thug1 C:\Games\THUG1] [--thug2 C:\Games\THUG2]
+//   node thug1_campaign/script_gap.ts [--thug1 C:\Games\THUG1] [--thug2 C:\Games\THUG2]
 //        [--thug2-exe <reference build exe>] [--cfuncs data/derived/cfuncs.csv]
 //        [--json <out.json>] [--list <out.md>] [--story] [--dump <folder> [--ns out\neverscript\ns.exe]]
 //
@@ -12,7 +12,7 @@
 //     not by address), its member functions: the exe's by-name list (0x00688E80, 597 char* names: THUG1 registers
 //     every member by name; THUG2 registers 250 so and the rest in components' tables).
 // THUG2's side: data/derived/cfuncs.csv (tools/extract_cfuncs.ts; made from --thug2-exe when missing), the members
-// of tools/pipeline/level_port/thug2_members.ts (tools/extract_members.ts: the table members' checksums and the by-name
+// of thug2-level-converter-core/level_port/thug2_members.ts (tools/extract_members.ts: the table members' checksums and the by-name
 // ones), its scripts and globals from Data\pre\qb_scripts.prx and the loose Data\scripts (the game-wide ones) and
 // - only for how THUG2 calls a function - every .qb in Data\pre\*.prx.
 //
@@ -38,13 +38,13 @@ import * as childProcess from "node:child_process";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { parseArgs } from "node:util";
-import * as prx from "../level_port/prx.ts";
-import { checksum, type Token, tokens } from "../level_port/qb.ts";
-import { NAMED_MEMBERS, TABLE_MEMBERS } from "../level_port/thug2_members.ts";
-import { helpFromHeader } from "../lib/cli.ts";
-import { REFERENCE_EXE } from "../lib/decomp.ts";
-import { findCaseless, resolveInstall } from "../lib/install.ts";
-import { decodeLatin1, isMain, print, pyExit, runMain } from "../lib/py.ts";
+import * as prx from "thug2-level-converter-core/level_port/prx.ts";
+import { checksum, type Token, tokens } from "thug2-level-converter-core/level_port/qb.ts";
+import { NAMED_MEMBERS, TABLE_MEMBERS } from "thug2-level-converter-core/level_port/thug2_members.ts";
+import { helpFromHeader } from "thug2-level-converter-core/lib/cli.ts";
+import { REFERENCE_EXE } from "thug2-level-converter-core/lib/decomp.ts";
+import { findCaseless, resolveInstall } from "thug2-level-converter-core/lib/install.ts";
+import { decodeLatin1, isMain, print, pyExit, runMain } from "thug2-level-converter-core/lib/py.ts";
 
 // --- tokens -----------------------------------------------------------------------------------------------------
 

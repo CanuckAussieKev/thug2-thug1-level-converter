@@ -5,7 +5,7 @@ under a CFunction or member function (the transitive callees not shared with the
 decompiled. The exe is only read.
 
     GHIDRA_INSTALL_DIR=C:/ghidra uv run --no-project --python 3.13 --with pyghidra \
-        python -I tools/pipeline/thug1_campaign/thug1_functions.py [C:/Games/THUG1/Game/THUG.exe] [C:/Games/THUG1-ghidra] [out.json]
+        python -I thug1_campaign/thug1_functions.py [C:/Games/THUG1/Game/THUG.exe] [C:/Games/THUG1-ghidra] [out.json]
 
 The project (C:/Games/THUG1-ghidra/THUG1) is created on the first run (analysis: several minutes) and reused after.
 """
@@ -17,7 +17,7 @@ import pyghidra
 
 pyghidra.start()
 
-# THUG.exe's CFunction table (tools/pipeline/thug1_campaign/script_gap.ts finds it by a scan: 0x00686AC0, 1144 entries).
+# THUG.exe's CFunction table (thug1_campaign/script_gap.ts finds it by a scan: 0x00686AC0, 1144 entries).
 CFUNC_TABLE = 0x00686AC0
 CFUNC_COUNT = 1144
 

@@ -7,9 +7,9 @@ repo: the files are made from your copies each time.
 ## Running it
 
 Needs Node 24+ (`npm install` once), NeverScript (`tools\build_neverscript.ps1` ->
-`out\neverscript\ns.exe`) and, to install the levels, tools/pipeline/menu_level/make_menu_level.ts.
+`out\neverscript\ns.exe`) and, to install the levels, thug2-content-pipeline/menu_level/make_menu_level.ts.
 
-    node tools/pipeline/thug1_levels/thug1_levels.ts convert [--thug1 C:\Games\THUG1] [--thug2 C:\Games\THUG2] [--static]
+    node thug1_levels/thug1_levels.ts convert [--thug1 C:\Games\THUG1] [--thug2 C:\Games\THUG2] [--static]
          [--compat thugpro|none] [--legacy-names]
     node tools/pipeline/menu_level/make_menu_level.ts
 
@@ -23,7 +23,7 @@ loaded by `Load_<level>`): `nj`, `ny`, `fl`, `sd`, `hi`, `vc`, `sj`, `ru`, `vn`,
 ports load too. A name THUG2 already uses keeps the `thug1_` prefix (`thug1_sc`, `thug1_dj`, `thug1_ph`,
 `thug1_testlevel`: THUG2 has SC, DJ, PH, TestLevel of its own), as do the levels THUG1 doesn't load by their own
 name (`thug1_nj_skateshop`, `thug1_skateshop`, `thug1_cas_bedroom`). Hotter Than Hell (THUG1's SE - THUG2's SE is
-its own) is `hh`, THUGPRO's choice: TP-30 in the compatibility register (tools/pipeline/compat/thugpro). `--compat none`
+its own) is `hh`, THUGPRO's choice: TP-30 in the compatibility register (thug2-level-converter-core/compat/thugpro). `--compat none`
 leaves the register out (`thug1_se`); `--legacy-names` names every level `thug1_<code>` as before. Name levels to convert only some (`convert NJ SE`). The default is the 9 main levels (NJ, NY, FL, SD,
 HI, VC, SJ, RU, SE = Hotter Than Hell), the 6 classic ones (SC Old School, DJ Old Downhill Jam, PH Old Philly, VN Old
 Venice, HN Old Hangar, SC2 School II) and NJ_Skateshop; `skateshop` (THPS4's shop again), `CAS_BEDROOM` and
@@ -31,14 +31,14 @@ Venice, HN Old Hangar, SC2 School II) and NJ_Skateshop; `skateshop` (THPS4's sho
 
 The table `LEVELS` in `thug1_levels.ts` is the list: code, sign text, real-world location, a THUG2 sign texture that
 suits it, the level select number (40-58), default or not. `levels.json` carries the same per level (`game`,
-`location`, `icon`, `level_num`, ...: see `tools/pipeline/level_port/ported_levels.ts`).
+`location`, `icon`, `level_num`, ...: see `thug2-level-converter-core/level_port/ported_levels.ts`).
 
 `make_menu_level.ts` (which makes the data overlay `<thug2>\thug2-decomp-data` from scratch on each run) then copies
 the converted levels of both `thug2-decomp-thps4` and `thug2-decomp-thug1` into the overlay and adds them to
 `Levels.qb` and the level select. Run it again after every `convert`. Delete `thug2-decomp-thug1` and run it again to
 take the levels out.
 
-    node tools/pipeline/thug1_levels/thug1_levels.ts selfcheck
+    node thug1_levels/thug1_levels.ts selfcheck
 
 reads THUG2's LA and TestLevel scene / collision / textures (and any `--extra Data\pre` archives) and writes them
 back - they must come out byte-identical - and parses every level file in every THUG1 archive (scenes, collision with
@@ -46,7 +46,7 @@ its BSP trees, textures written back byte-identical, qb files): 333 files.
 
 ## THUG1's formats (the differences from THUG2's)
 
-- Archives: `.pre` is THUG2's `.prx` format (version 0xABCD0003, LZSS) - `tools/pipeline/level_port/prx.ts`.
+- Archives: `.pre` is THUG2's `.prx` format (version 0xABCD0003, LZSS) - `thug2-level-converter-core/level_port/prx.ts`.
 - Textures (`.tex.xbx`): THUG2's format. The classic levels' skies are 8-bit paletted and Xbox-swizzled (as THPS4's):
   made 32-bit, unswizzled.
 - Scene (`.scn.xbx`): THUG2's materials byte for byte; the sectors are THPS4's layout (one vertex array per sector:
@@ -86,7 +86,7 @@ its BSP trees, textures written back byte-identical, qb files): 333 files.
   that name, else one of the same role).
 - Scripts: from the nodes' trigger scripts and the level structure's startup_script / setup_script, through
   everything they call, from the level's .qb / _scripts.qb / _sfx.qb and THUG1's level designers' shared files - by
-  `tools/pipeline/level_port/script_port.ts` (THUG1's long if / else / switch made THUG2's jump forms, `object:command` calls
+  `thug2-level-converter-core/level_port/script_port.ts` (THUG1's long if / else / switch made THUG2's jump forms, `object:command` calls
   checked against the object's components and run only while it is alive). Left out: the goal manager, panels,
   cutscenes, the skater's state, commands THUG2 doesn't have, animations / sounds THUG2 doesn't load. The classic
   levels' `DuplicateTrigger` gap sectors get the trigger script of the node they link to.
@@ -97,13 +97,13 @@ its BSP trees, textures written back byte-identical, qb files): 333 files.
   and make_menu_level installs them in the overlay; VC's limo is parked by the SJ restart and drivable ("Press ... to drive"), its goal counted as won.
   The other levels' drivable cars stay parked or absent (THUG1).
 
-The shared code (THUG2 writers, geometry conversion, nodes, installing) is in `tools/pipeline/level_port`, used by
-`tools/pipeline/thps4_levels` too.
+The shared code (THUG2 writers, geometry conversion, nodes, installing) is in `thug2-level-converter-core/level_port`, used by
+`thug2-thps4-level-converter/thps4_levels` too.
 
 ## THUGPRO (online play with THUGPRO's own THUG1 ports)
 
-    node tools/pipeline/thug1_levels/thugpro_compare.ts [levels...] [--thug2 C:\Games\THUG2-3] [--details] [--json out]
-    node tools/pipeline/thug1_levels/migrate_layouts.ts --game C:\Games\THUG2-3 [--dry-run]
+    node thug1_levels/thugpro_compare.ts [levels...] [--thug2 C:\Games\THUG2-3] [--details] [--json out]
+    node thug1_levels/migrate_layouts.ts --game C:\Games\THUG2-3 [--dry-run]
 
 `thugpro_compare.ts` reads THUGPRO's install (read only: `%LOCALAPPDATA%\THUG Pro\data\pre`) and THUG1's node arrays
 and compares each converted level three ways: the load script's checksum (what the network carries), every node
@@ -116,5 +116,5 @@ frame is THUG1's own on both sides).
 `thugpro_compare.ts --details` also lists THUGPRO's hand edits against THUG1's own data, by kind (`thugpro_edits.ts`
 `inventory`: nodes moved / renamed / reused / added / removed / changed with the keys and flags that changed, level
 scripts, scene sectors, collision objects and face flags). `thugpro_compare.ts --extract-thugpro` writes THUGPRO's
-spawn edits into the compatibility profile (TP-31: `tools/pipeline/compat/thugpro/thug1_levels.json` `spawns`), which
+spawn edits into the compatibility profile (TP-31: `thug2-level-converter-core/compat/thugpro/thug1_levels.json` `spawns`), which
 `convert` applies (`applySpawns`); the comparison's `spawns` column checks the result (names, places, order).

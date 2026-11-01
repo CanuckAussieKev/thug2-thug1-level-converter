@@ -2,8 +2,8 @@
 
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { checksum } from "../level_port/qb.ts";
-import { pack } from "../lib/struct.ts";
+import { checksum } from "thug2-level-converter-core/level_port/qb.ts";
+import { pack } from "thug2-level-converter-core/lib/struct.ts";
 import { ScriptSet, stubs, subsystem } from "./script_gap.ts";
 
 const name = (text: string): Buffer => Buffer.concat([Buffer.from([0x16]), pack("<I", checksum(text))]);

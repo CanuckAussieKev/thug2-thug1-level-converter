@@ -1,9 +1,9 @@
-// NOT ORIGINAL - a THUG1 level's node array kept nearly whole in THUG2, with its scripts (tools/pipeline/level_port/
+// NOT ORIGINAL - a THUG1 level's node array kept nearly whole in THUG2, with its scripts (thug2-level-converter-core/level_port/
 // script_port.ts translates them): THUG1's nodes, scripts and objects are THUG2's own predecessors (the same classes,
 // keys, ped AI - Ped_InitAI -, car paths, bouncy objects, proximity nodes, sound emitters), so the level's peds,
 // vehicles, moving objects, particles and scripts come along as they are, checked against what THUG2 has:
 //
-//   nodes      restarts, rails, level geometry and KOTH crowns as before (tools/pipeline/level_port/nodes.ts); waypoints,
+//   nodes      restarts, rails, level geometry and KOTH crowns as before (thug2-level-converter-core/level_port/nodes.ts); waypoints,
 //              climbing nodes (ledges, ladders), proximity nodes, sound emitters whole; LevelObjects as LevelObjects
 //              (their sectors are in their own space - static geometry put them at the level's origin), bouncy ones
 //              with their rigid body settings; peds as THUG1's own people - its models, skeletons and animations
@@ -23,14 +23,14 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import * as nodes from "../level_port/nodes.ts";
-import * as pedRigs from "../level_port/ped_rigs.ts";
-import * as pedsCars from "../level_port/peds_cars.ts";
-import * as prx from "../level_port/prx.ts";
-import * as qb from "../level_port/qb.ts";
-import { checksum, Name, Struct } from "../level_port/qb.ts";
-import * as scriptPort from "../level_port/script_port.ts";
-import { decodeLatin1, hex8, pyJoin } from "../lib/py.ts";
+import * as nodes from "thug2-level-converter-core/level_port/nodes.ts";
+import * as pedRigs from "thug2-level-converter-core/level_port/ped_rigs.ts";
+import * as pedsCars from "thug2-level-converter-core/level_port/peds_cars.ts";
+import * as prx from "thug2-level-converter-core/level_port/prx.ts";
+import * as qb from "thug2-level-converter-core/level_port/qb.ts";
+import { checksum, Name, Struct } from "thug2-level-converter-core/level_port/qb.ts";
+import * as scriptPort from "thug2-level-converter-core/level_port/script_port.ts";
+import { decodeLatin1, hex8, pyJoin } from "thug2-level-converter-core/lib/py.ts";
 import { Thug1Peds } from "./thug1_peds.ts";
 
 // THUG1's shared script files a level's scripts may be brought along from (besides the level's own .qb files).
@@ -526,7 +526,7 @@ export class NodePass {
             this.count("peds given a THUG2 profile");
         }
         // (the skeleton and animations the THUG2 profile's model is rigged to - a woman's on THPS6_human is twisted:
-        // tools/pipeline/level_port/ped_rigs.ts; its animations then go in load_level_anims below)
+        // thug2-level-converter-core/level_port/ped_rigs.ts; its animations then go in load_level_anims below)
         if (pedRigs.fixPedRigs([s], n, (v) => this.port.assets.femaleRigs.has(v)).changed.length)
             this.count("peds given their profile's skeleton");
         const anim = s.get("AnimName");

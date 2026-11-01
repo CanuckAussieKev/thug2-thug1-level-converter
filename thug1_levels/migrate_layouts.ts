@@ -2,19 +2,19 @@
 // checksum>.txt, src/game/front/level_editor_layout.cpp) from the names this converter gave them before (thug1_nj...)
 // to the names it gives them now (thug1_levels.levelName: THUG1's own, nj...; Hotter Than Hell hh - TP-30): the file
 // renamed after the new scene's checksum and its scene line changed. The frame is the same (THUG1's own world
-// coordinates, as before), so no record moves (tools/pipeline/thaw_levels/migrate_layouts.ts's migrateText with no shift).
+// coordinates, as before), so no record moves (thug2-thaw-level-converter/thaw_levels/migrate_layouts.ts's migrateText with no shift).
 //
-//   node tools/pipeline/thug1_levels/migrate_layouts.ts --game C:\Games\THUG2-3 [--thug1 C:\Games\THUG1] [--dry-run] [levels...]
+//   node thug1_levels/migrate_layouts.ts --game C:\Games\THUG2-3 [--thug1 C:\Games\THUG1] [--dry-run] [levels...]
 //
 // The old file is kept as <name>.txt.before-thugpro-names; a level whose new file already exists is skipped.
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { migrateText } from "../level_port/layouts.ts";
-import * as qb from "../level_port/qb.ts";
-import { parseCli } from "../lib/cli.ts";
-import { resolveInstall } from "../lib/install.ts";
-import { hex8, isMain, print, pyExit, pyJoin, readTextPy, runMain } from "../lib/py.ts";
+import { migrateText } from "thug2-level-converter-core/level_port/layouts.ts";
+import * as qb from "thug2-level-converter-core/level_port/qb.ts";
+import { parseCli } from "thug2-level-converter-core/lib/cli.ts";
+import { resolveInstall } from "thug2-level-converter-core/lib/install.ts";
+import { hex8, isMain, print, pyExit, pyJoin, readTextPy, runMain } from "thug2-level-converter-core/lib/py.ts";
 import { LEVELS, levelNames } from "./thug1_levels.ts";
 
 const FOLDER = "thug2-decomp-layouts";

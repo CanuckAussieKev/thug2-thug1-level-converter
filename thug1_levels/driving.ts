@@ -2,7 +2,7 @@
 // thug1_levels.drivingScripts (and re-applied by make_menu_level to Anteara Mod's copy of car_scripts.qb, which is
 // THUG1's unchanged).
 
-import { FormatError } from "../level_port/binio.ts";
+import { FormatError } from "thug2-level-converter-core/level_port/binio.ts";
 
 // {file: [THUG1's text, THUG2's]} - each THUG1 text (as ns.exe decompiles it) must be there exactly once. Seen in the
 // game (2026-10-21, C:\Games\THUG2-3): unchanged, VC hung loading and "Press ... to drive" never came.

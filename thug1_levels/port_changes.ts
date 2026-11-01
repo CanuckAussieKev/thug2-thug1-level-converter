@@ -1,7 +1,7 @@
 // NOT ORIGINAL - our own changes to THUG1's levels (the user's decision 2026-10-20): what this converter does to a
 // THUG1 level that comes neither from THUG1 nor from THUGPRO, listed as data in the `port_changes` section of
-// tools/pipeline/compat/thugpro/thug1_levels.json (README.md there: "Our own changes (port_changes)", PC-THUG1-1 ...), read through
-// tools/pipeline/compat/compat.ts portChanges whatever --compat says. Each entry (compat.Entry): id (PC-THUG1-n), op ("add" /
+// thug2-level-converter-core/compat/thugpro/thug1_levels.json (README.md there: "Our own changes (port_changes)", PC-THUG1-1 ...), read through
+// thug2-level-converter-core/compat/compat.ts portChanges whatever --compat says. Each entry (compat.Entry): id (PC-THUG1-n), op ("add" /
 // "set" / "remove"), rule (a short name), target ({levels, what}: what it applies to - a rule's description when it
 // applies to every node / script of a kind), why (one line), required (true: needed for the level to load or to avoid
 // a crash - applied even with --no-port-changes).
@@ -11,8 +11,8 @@
 // register and the code would disagree). --no-port-changes switches off every entry that isn't required: THUG1's own data
 // as far as THUG2 can load it.
 
-import * as compat from "../compat/compat.ts";
-import { FormatError } from "../level_port/binio.ts";
+import * as compat from "thug2-level-converter-core/compat/compat.ts";
+import { FormatError } from "thug2-level-converter-core/level_port/binio.ts";
 
 export type Op = compat.Op;
 

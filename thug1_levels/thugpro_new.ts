@@ -1,7 +1,7 @@
 // NOT ORIGINAL - what is NEW in THUGPRO's ports of THUG1's levels: content THUGPRO made that is in no source game's
 // level (THUG1's, or THUG2's for the same place) - its models, nodes, level scripts and host-toggled level files. Morten
 // (THUGPRO's author) agreed to the user that our ports may include it (2026-10-20); the user's decision: all of it in
-// ONE separate section of the differences file, `thugpro_new` in tools/pipeline/compat/thugpro/thug1_levels.json, apart from the
+// ONE separate section of the differences file, `thugpro_new` in thug2-level-converter-core/compat/thugpro/thug1_levels.json, apart from the
 // hand edits that are data (TP-30 ... TP-39), so that it is easily identifiable (README.md there: "New in THUGPRO (not
 // in any source game)", TPN-THUG1-1 ... TPN-THUG1-4).
 //
@@ -14,7 +14,7 @@
 // [...]}; every entry {id, kind, op, target, why, crc32, ...}:
 //   TPN-THUG1-1 asset   op add: a model file THUG2 hasn't (models\...: target = its overlay path), from `file` (a path in
 //                 THUGPRO's install) / `entry` (the file in that archive) - written to <staging>\models\ and installed into
-//                 the overlay by make_menu_level (tools/pipeline/level_port/ported_levels.ts installFiles).
+//                 the overlay by make_menu_level (thug2-level-converter-core/level_port/ported_levels.ts installFiles).
 //   TPN-THUG1-2 node    op add: THUGPRO's node `target` appended to THUG1's node array (Links by name);
 //                 op set: THUG1's node `target` given THUGPRO's values of `fields` (THUGPRO's node `node`, when renamed;
 //                 a field THUGPRO's node hasn't is taken off). Both kept whole by our converter (thug1_port.NodePass
@@ -27,18 +27,18 @@
 //   TPN-THUG1-4 file    op add: THUGPRO's host-toggled level file (levels\<level>\<level>_thugpro.qb: its "level changes",
 //                 switched by THUGPRO's protocol messages 155-159 - nothing runs them until a protocol layer does, so the
 //                 default state, all off, is THUGPRO's default).
-// Written by `node tools/pipeline/thug1_levels/thugpro_compare.ts --extract-thugpro` (extract), never typed in.
+// Written by `node thug1_levels/thugpro_compare.ts --extract-thugpro` (extract), never typed in.
 
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as zlib from "node:zlib";
-import type * as compat from "../compat/compat.ts";
-import { FormatError } from "../level_port/binio.ts";
-import * as prx from "../level_port/prx.ts";
-import * as qb from "../level_port/qb.ts";
-import { Name, type QbValue, Struct } from "../level_port/qb.ts";
-import * as scriptPort from "../level_port/script_port.ts";
-import { pack } from "../lib/struct.ts";
+import type * as compat from "thug2-level-converter-core/compat/compat.ts";
+import { FormatError } from "thug2-level-converter-core/level_port/binio.ts";
+import * as prx from "thug2-level-converter-core/level_port/prx.ts";
+import * as qb from "thug2-level-converter-core/level_port/qb.ts";
+import { Name, type QbValue, Struct } from "thug2-level-converter-core/level_port/qb.ts";
+import * as scriptPort from "thug2-level-converter-core/level_port/script_port.ts";
+import { pack } from "thug2-level-converter-core/lib/struct.ts";
 import * as handEdits from "./hand_edits.ts";
 import type { Op } from "./port_changes.ts";
 import { LEFT_OUT_PREFIXES } from "./thug1_port.ts";

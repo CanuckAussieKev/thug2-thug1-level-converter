@@ -1,13 +1,13 @@
 // NOT ORIGINAL - compares our converted THUG1 levels with THUGPRO's own ports of them, read from the user's THUGPRO
 // install (read only: <thugpro>\data\pre\<level>_scripts.prx, <level>col.prx and thugpro_qb.prx's Levels.qb), and both
 // with THUG1's own node arrays (C:\Games\THUG1, read only), for online play between the two. What has to agree for a THUGPRO player and one of ours to share a level, and what else is reported, as
-// tools/pipeline/thaw_levels/thugpro_compare.ts (whose pieces this uses):
+// thug2-thaw-level-converter/thaw_levels/thugpro_compare.ts (whose pieces this uses):
 //   - the load script (0x46 / 0x33 carry its checksum): ours Load_<thug1_levels.levelName>, THUGPRO's the load_script
 //     of its level structure for the same THUG1 level (found by the level's name=, else its folder);
 //   - the world frame (skater updates carry world positions): every node shared by name at the same place;
 //   - King of the Hill crowns in the same order and places; the game-mode nodes (CTF, flags, team restart);
 //   - the multiplayer restarts (order, places, and which differ by name), collision faces unreachable through their
-//     BSP trees (tools/pipeline/level_port/col_check.ts);
+//     BSP trees (thug2-level-converter-core/level_port/col_check.ts);
 //   - an audit of the level's life: node classes, the trigger scripts THUGPRO's nodes run that ours don't, the level
 //     scripts THUGPRO defines that we don't bring;
 //   - THUGPRO's hand edits the profile applies (TP-32 ... TP-39, hand_edits.checkEdits): per register entry, how many
@@ -16,10 +16,10 @@
 //   - what is new in THUGPRO (TPN-THUG1-1 ... 4, thugpro_new.checkNew): each model, node, script and file as THUGPRO
 //     has it in our converted level ("new in THUGPRO as THUGPRO's: TPN-THUG1-1 4/4, ..."), with --details why not.
 //
-//   node tools/pipeline/thug1_levels/thugpro_compare.ts [levels...] [--thug2 C:\Games\THUG2-3] [--thug1 C:\Games\THUG1]
+//   node thug1_levels/thugpro_compare.ts [levels...] [--thug2 C:\Games\THUG2-3] [--thug1 C:\Games\THUG1]
 //        [--thugpro <dir>] [--staging <dir>] [--legacy-names] [--compat thugpro|none] [--json out] [--details]
-//   node tools/pipeline/thug1_levels/thugpro_compare.ts --extract-thugpro [levels...]
-//        (writes THUGPRO's edits into tools/pipeline/compat/thugpro/thug1_levels.json - never typed in: TP-31's "spawns"
+//   node thug1_levels/thugpro_compare.ts --extract-thugpro [levels...]
+//        (writes THUGPRO's edits into thug2-level-converter-core/compat/thugpro/thug1_levels.json - never typed in: TP-31's "spawns"
 //        (thugpro_edits.spawnEdits), TP-32 ... TP-39's sections (thugpro_edits.handEdits) and thugpro_new (thugpro_new.extract,
 //        against --staging's converted levels); prints what it leaves out
 //        and why: translation by THUGPRO's toolchain, THUGPRO's own content)
@@ -27,6 +27,7 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
+import * as compat from "thug2-level-converter-core/compat/compat.ts";
 import {
     CTF_NAMES,
     isCrown,
@@ -38,15 +39,15 @@ import {
     sameSequence,
     sequence,
     TOLERANCE,
-} from "../compat/thugpro_nodes.ts";
-import * as colCheck from "../level_port/col_check.ts";
-import * as prx from "../level_port/prx.ts";
-import * as qb from "../level_port/qb.ts";
-import { Name, type QbValue, Struct } from "../level_port/qb.ts";
-import * as scriptPort from "../level_port/script_port.ts";
-import * as thug2Col from "../level_port/thug2_col.ts";
-import { parseCli } from "../lib/cli.ts";
-import { resolveInstall } from "../lib/install.ts";
+} from "thug2-level-converter-core/compat/thugpro_nodes.ts";
+import * as colCheck from "thug2-level-converter-core/level_port/col_check.ts";
+import * as prx from "thug2-level-converter-core/level_port/prx.ts";
+import * as qb from "thug2-level-converter-core/level_port/qb.ts";
+import { Name, type QbValue, Struct } from "thug2-level-converter-core/level_port/qb.ts";
+import * as scriptPort from "thug2-level-converter-core/level_port/script_port.ts";
+import * as thug2Col from "thug2-level-converter-core/level_port/thug2_col.ts";
+import { parseCli } from "thug2-level-converter-core/lib/cli.ts";
+import { resolveInstall } from "thug2-level-converter-core/lib/install.ts";
 import {
     Float,
     formatFixed,
@@ -58,7 +59,7 @@ import {
     pyRound,
     runMain,
     writeTextPy,
-} from "../lib/py.ts";
+} from "thug2-level-converter-core/lib/py.ts";
 import { checkEdits, editCounts, SECTIONS, type SectionCheck } from "./hand_edits.ts";
 import { BY_CODE, COMPAT, LEVELS, levelNames, levelStructs, prePath, STAGING, setCompat } from "./thug1_levels.ts";
 import {
@@ -335,7 +336,7 @@ const OPTIONS = {
     "extract-thugpro": { type: "boolean" },
 } as const;
 
-export const PROFILE_FILE = new URL("../compat/thugpro/thug1_levels.json", import.meta.url);
+export const PROFILE_FILE = compat.profileFile("thug1_levels"); // (thug2-level-converter-core's compat/thugpro)
 
 // The THUGPRO port's key (its data\pre\<key>_scripts.prx) of every THUG1 level THUGPRO ports, by THUG1 code.
 function portKeys(thug1: string, thugpro: string, codes: readonly string[]): Map<string, string> {
@@ -382,8 +383,8 @@ function extractNew(
             "NEW in THUGPRO - content THUGPRO made that is in no source game (the user's decision 2026-10-20, with " +
             "Morten's agreement): BY REFERENCE ONLY - references and checksums of THUGPRO's files, read from the " +
             "user's THUGPRO install when converting (--thugpro), never their bytes. Written by `node " +
-            "tools/pipeline/thug1_levels/thugpro_compare.ts --extract-thugpro` (thugpro_new.extract); its form: " +
-            "tools/pipeline/thug1_levels/thugpro_new.ts (entries: compat.Entry, target {level, name}; levels: each level's THUGPRO key and archive). --no-thugpro-new or --compat none leave it out.",
+            "thug1_levels/thugpro_compare.ts --extract-thugpro` (thugpro_new.extract); its form: " +
+            "thug1_levels/thugpro_new.ts (entries: compat.Entry, target {level, name}; levels: each level's THUGPRO key and archive). --no-thugpro-new or --compat none leave it out.",
     };
     const levels = new Map<string, thugproNew.NewLevel>();
     const install = new thugproNew.Install(thugpro);
@@ -435,7 +436,7 @@ function extract(thug1: string, thugpro: string, codes: readonly string[], thug2
         _register: "TP-31",
         _source:
             "THUGPRO's installed data\\pre\\<level>_scripts.prx node arrays against THUG1's own, extracted by " +
-            "`node tools/pipeline/thug1_levels/thugpro_compare.ts --extract-thugpro` (pos = THUG2's Pos axes; order: every " +
+            "`node thug1_levels/thugpro_compare.ts --extract-thugpro` (pos = THUG2's Pos axes; order: every " +
             "Multiplayer / Horse / CTF / Team restart in THUGPRO's order, by THUG1's names)",
     };
     // TP-32 ... TP-39: THUGPRO's other hand edits (thugpro_edits.handEdits, hand_edits.ts)
@@ -446,7 +447,7 @@ function extract(thug1: string, thugpro: string, codes: readonly string[], thug2
                 _register: register,
                 _source:
                     `${what}: THUGPRO's installed data\\pre\\<level>_scripts.prx node arrays and <level>col.prx collision ` +
-                    "against THUG1's own, extracted by `node tools/pipeline/thug1_levels/thugpro_compare.ts --extract-thugpro` " +
+                    "against THUG1's own, extracted by `node thug1_levels/thugpro_compare.ts --extract-thugpro` " +
                     "(thugpro_edits.handEdits; never typed in)",
             },
         ]),
@@ -472,8 +473,8 @@ function extract(thug1: string, thugpro: string, codes: readonly string[], thug2
     delete profile.port_changes;
     profile.thugpro_new = extractNew(thug1, thugpro, thug2, staging, codes);
     if (own !== undefined) profile.port_changes = own;
-    fs.writeFileSync(PROFILE_FILE, `${formatJson(profile)}\n`, "utf-8");
-    print(`wrote ${path.normalize(decodeURIComponent(PROFILE_FILE.pathname.slice(1)))}`);
+    fs.writeFileSync(compat.profileFileToWrite("thug1_levels"), `${formatJson(profile)}\n`, "utf-8");
+    print(`wrote ${PROFILE_FILE}`);
     return 0;
 }
 

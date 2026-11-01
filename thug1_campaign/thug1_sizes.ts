@@ -1,8 +1,8 @@
 // NOT ORIGINAL - sizes THUG1 features for the campaign survey from the
-// function list tools/pipeline/thug1_campaign/thug1_functions.py dumps out of THUG1's THUG.exe (Ghidra's analysis: entry,
+// function list thug1_campaign/thug1_functions.py dumps out of THUG1's THUG.exe (Ghidra's analysis: entry,
 // size, callees). Nothing is decompiled.
 //
-//   node tools/pipeline/thug1_campaign/thug1_sizes.ts [--functions data/derived/thug1_functions.json] [--exe <THUG.exe>]
+//   node thug1_campaign/thug1_sizes.ts [--functions data/derived/thug1_functions.json] [--exe <THUG.exe>]
 //        [--cfunc <name>]... [--member <name>]... [--checksum <script / global name>]...
 //
 // For a CFunction (THUG.exe's table, found as script_gap.ts finds it): its own size and the code under it - the
@@ -12,9 +12,9 @@
 
 import * as fs from "node:fs";
 import { parseArgs } from "node:util";
-import { checksum } from "../level_port/qb.ts";
-import { helpFromHeader } from "../lib/cli.ts";
-import { isMain, print, pyExit, runMain } from "../lib/py.ts";
+import { checksum } from "thug2-level-converter-core/level_port/qb.ts";
+import { helpFromHeader } from "thug2-level-converter-core/lib/cli.ts";
+import { isMain, print, pyExit, runMain } from "thug2-level-converter-core/lib/py.ts";
 import { exeTables } from "./script_gap.ts";
 
 interface Fn {
@@ -116,8 +116,7 @@ function main(argv: string[]): number {
             checksum: { type: "string", multiple: true, default: [] },
         },
     });
-    if (!fs.existsSync(values.functions))
-        pyExit(`no ${values.functions}: run tools/pipeline/thug1_campaign/thug1_functions.py`);
+    if (!fs.existsSync(values.functions)) pyExit(`no ${values.functions}: run thug1_campaign/thug1_functions.py`);
     const graph = new CallGraph(JSON.parse(fs.readFileSync(values.functions, "utf-8")) as Fn[]);
     const tables = exeTables(values.exe);
     const exe = fs.readFileSync(values.exe);

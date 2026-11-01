@@ -6,7 +6,7 @@
 //   models\THUG1_Peds\<the same path>.skin.xbx, the textures (THUG2's format already) and the CAS stub as they are, an
 //   empty collision file (THUG2's peds have one; THUG1's don't). Profiles and parts are added to THUG2's lists under
 //   names of their own - THUG1_<profile>, THUG1_<part> (THUG2 has parts and profiles of the same names, other models) -
-//   through the overlay (tools/pipeline/level_port/ped_models.ts); the parts are no_random, so THUG2's own random peds never
+//   through the overlay (thug2-level-converter-core/level_port/ped_models.ts); the parts are no_random, so THUG2's own random peds never
 //   pick them. THUG1's ped_board parts (the skateboard, the leaf blower, the jackhammer...) go in the accessories list:
 //   THUG2's `board` list is the skaters' (cas_skater_m.qb).
 // - Random people (random_male_profile, randomized_desc_id, the MultiStage profiles' random_index): THUG2 picks random
@@ -28,15 +28,15 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { pedAiAnims, Thug2Globals } from "../level_port/ped_ai.ts";
-import * as pedModels from "../level_port/ped_models.ts";
-import * as pedRigs from "../level_port/ped_rigs.ts";
-import * as prx from "../level_port/prx.ts";
-import * as qb from "../level_port/qb.ts";
-import { checksum, Name, Struct } from "../level_port/qb.ts";
-import * as thug2Col from "../level_port/thug2_col.ts";
-import * as thug2Scene from "../level_port/thug2_scene.ts";
-import { decodeLatin1, hex8 } from "../lib/py.ts";
+import { pedAiAnims, Thug2Globals } from "thug2-level-converter-core/level_port/ped_ai.ts";
+import * as pedModels from "thug2-level-converter-core/level_port/ped_models.ts";
+import * as pedRigs from "thug2-level-converter-core/level_port/ped_rigs.ts";
+import * as prx from "thug2-level-converter-core/level_port/prx.ts";
+import * as qb from "thug2-level-converter-core/level_port/qb.ts";
+import { checksum, Name, Struct } from "thug2-level-converter-core/level_port/qb.ts";
+import * as thug2Col from "thug2-level-converter-core/level_port/thug2_col.ts";
+import * as thug2Scene from "thug2-level-converter-core/level_port/thug2_scene.ts";
+import { decodeLatin1, hex8 } from "thug2-level-converter-core/lib/py.ts";
 import * as thug1 from "./thug1.ts";
 
 export { pedAiAnims, Thug2Globals }; // (level_port/ped_ai.ts since the split)

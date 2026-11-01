@@ -1,7 +1,7 @@
 // THUG1 PC level files (in Data\pre\<LV>scn.pre / <LV>col.pre: levels\<lv>\<lv>.scn.xbx / .tex.xbx / .col.xbx).
 //
-// - Textures (.tex.xbx): THUG2's format (tools/pipeline/level_port/tex.ts).
-// - Collision (.col.xbx, version 9): THUG2's version 10 without the faces' reaches (tools/pipeline/level_port/thug2_col.ts
+// - Textures (.tex.xbx): THUG2's format (thug2-level-converter-core/level_port/tex.ts).
+// - Collision (.col.xbx, version 9): THUG2's version 10 without the faces' reaches (thug2-level-converter-core/level_port/thug2_col.ts
 //   reads both); converted by adding them (toThug2Col).
 // - Scene (.scn.xbx): THUG2's materials exactly; the sectors keep THPS4's layout - one vertex array per sector, the
 //   meshes index into it:
@@ -16,11 +16,11 @@
 //   (SEC_WEIGHTS): the weights packed as THUG2's, the bone indices the bones' own numbers (THUG2's are x 3), the
 //   normals 3f (THUG2's packed) - toThug2Skin.
 
-import { FormatError, Reader } from "../level_port/binio.ts";
-import { pixelShader, type SourceSector } from "../level_port/geometry.ts";
-import * as thug2Col from "../level_port/thug2_col.ts";
-import * as thug2Scene from "../level_port/thug2_scene.ts";
-import { hex8, pyMax } from "../lib/py.ts";
+import { FormatError, Reader } from "thug2-level-converter-core/level_port/binio.ts";
+import { pixelShader, type SourceSector } from "thug2-level-converter-core/level_port/geometry.ts";
+import * as thug2Col from "thug2-level-converter-core/level_port/thug2_col.ts";
+import * as thug2Scene from "thug2-level-converter-core/level_port/thug2_scene.ts";
+import { hex8, pyMax } from "thug2-level-converter-core/lib/py.ts";
 
 export const COL_VERSION = 9;
 

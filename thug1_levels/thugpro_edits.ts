@@ -1,7 +1,7 @@
 // NOT ORIGINAL - what THUGPRO changed in its ports of THUG1's levels against THUG1's own data (read only: THUG1's
 // <LV>.pre / <LV>scn.pre / <LV>col.pre, THUGPRO's <level>_scripts.prx / <level>scn.prx / <level>col.prx):
 //   - spawnEdits: its edits to the network spawns (restarts with Multiplayer / Horse / CTF / Team types) - moved,
-//     re-typed, renamed, added, removed, reordered. TP-31 (tools/pipeline/compat/thugpro/thug1_levels.json "spawns", approved by
+//     re-typed, renamed, added, removed, reordered. TP-31 (thug2-level-converter-core/compat/thugpro/thug1_levels.json "spawns", approved by
 //     the user 2026-10-20) gives our ports the same spawns: THUG2 starts player n at the n-th Multiplayer restart of
 //     the node array and a respawn at one of the first 8 (Skate 0x00566100 -> GetRestartNode 0x0046B790;
 //     CSkater::MoveToRandomRestart 0x00580830 passes Rnd(8)), so the set, the places and the order all count.
@@ -9,14 +9,14 @@
 //     scripts, scene sectors, collision objects), for the user to decide on.
 // Used by thugpro_compare.ts (--extract-thugpro, --details).
 
-import { maxDiff, nodeArray, position, TOLERANCE } from "../compat/thugpro_nodes.ts";
-import { NET_RESTART_TYPES, THUG2_TERRAINS } from "../level_port/nodes.ts";
-import * as prx from "../level_port/prx.ts";
-import * as qb from "../level_port/qb.ts";
-import { Name, type QbValue, Struct, Vector } from "../level_port/qb.ts";
-import * as thug2Col from "../level_port/thug2_col.ts";
-import * as thug2Scene from "../level_port/thug2_scene.ts";
-import { hex8, pyJoin } from "../lib/py.ts";
+import { maxDiff, nodeArray, position, TOLERANCE } from "thug2-level-converter-core/compat/thugpro_nodes.ts";
+import { NET_RESTART_TYPES, THUG2_TERRAINS } from "thug2-level-converter-core/level_port/nodes.ts";
+import * as prx from "thug2-level-converter-core/level_port/prx.ts";
+import * as qb from "thug2-level-converter-core/level_port/qb.ts";
+import { Name, type QbValue, Struct, Vector } from "thug2-level-converter-core/level_port/qb.ts";
+import * as thug2Col from "thug2-level-converter-core/level_port/thug2_col.ts";
+import * as thug2Scene from "thug2-level-converter-core/level_port/thug2_scene.ts";
+import { hex8, pyJoin } from "thug2-level-converter-core/lib/py.ts";
 import * as handEditsLib from "./hand_edits.ts";
 import * as thug1 from "./thug1.ts";
 import { FACE_KEEP, prePath } from "./thug1_levels.ts";
