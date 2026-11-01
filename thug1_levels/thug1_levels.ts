@@ -30,10 +30,12 @@ import * as qb from "thug2-level-converter-core/level_port/qb.ts";
 import { Name, Struct } from "thug2-level-converter-core/level_port/qb.ts";
 import * as scriptCheck from "thug2-level-converter-core/level_port/script_check.ts";
 import * as scriptPort from "thug2-level-converter-core/level_port/script_port.ts";
+import * as staging from "thug2-level-converter-core/level_port/staging.ts";
 import * as tex from "thug2-level-converter-core/level_port/tex.ts";
 import * as thug2Scene from "thug2-level-converter-core/level_port/thug2_scene.ts";
 import { parseConverterArgs } from "thug2-level-converter-core/lib/converter_args.ts";
 import { resolveInstall } from "thug2-level-converter-core/lib/install.ts";
+import { requireNs } from "thug2-level-converter-core/lib/neverscript.ts";
 import { hex8, isMain, print, pyExit, pyJoin, pyRepr, runMain } from "thug2-level-converter-core/lib/py.ts";
 import * as handEdits from "thug2-thugpro-compat/hand_edits.ts";
 import * as compat from "thug2-thugpro-compat/profile.ts";
@@ -923,7 +925,7 @@ function title(text: string): string {
 
 export function cmdConvert(args: Args): void {
     const out = args.out || pyJoin(args.thug2, STAGING);
-    if (!fs.existsSync(args.ns)) pyExit(common.nsMissing(args.ns));
+    args.ns = requireNs(args.ns); // (--ns, NEVERSCRIPT, ... or `npx thug2-neverscript fetch` - lib/neverscript.ts)
     if (!prePath(args, "qb.pre")) pyExit(`${args.thug1}: THUG1's Data\\pre not found`);
     const structs = levelStructs(args);
     setCompat(args.compat, !args.noThugproNew, !args.noPortChanges);
@@ -937,7 +939,7 @@ export function cmdConvert(args: Args): void {
     // (THUG1's own people - thug1_peds.ts - unless --thug2-peds)
     const port = args.static ? null : new thug1Port.Thug1Port(args.thug2, prePath(args, "qb.pre")!, !args.thug2Peds);
     const wanted = args.levels.length ? args.levels : LEVELS.filter((info) => info[5]).map((info) => info[0]);
-    if (fs.existsSync(out) && fs.statSync(out).isDirectory()) fs.rmSync(out, { recursive: true });
+    staging.prepareStaging(out, !args.levels.length);
     fs.mkdirSync(out, { recursive: true });
     if (port !== null) {
         const written = drivingScripts(port, prePath(args, "qb.pre")!, out, args.ns);
@@ -998,7 +1000,7 @@ export function cmdConvert(args: Args): void {
         const files = levelFiles(args, code);
         const struct = structs.get(code.toLowerCase());
         const name = levelName(code, struct, thug2Loads, args.legacyNames);
-        const levelDir = pyJoin(out, "levels", name);
+        const levelDir = staging.freshLevelFolder(out, name);
         let nodeReport: string[] = [];
         const newLevel = COMPAT.new.get(code.toLowerCase());
         let tpNew: NewContext | null = null;
@@ -1081,9 +1083,8 @@ export function cmdConvert(args: Args): void {
             report.push(`  THUG1 ped not converted: ${what}: ${why}`);
     }
     print(report.join("\n"));
-    print(
-        `wrote ${out} (${manifest.levels.length} levels); install with tools\\pipeline\\menu_level\\make_menu_level.ts`,
-    );
+    print(`wrote ${out} (${manifest.levels.length} levels)`);
+    print(staging.installHint(out));
 }
 
 // --- self-check -------------------------------------------------------------------------------------------------
@@ -1224,7 +1225,7 @@ export function main(argv: readonly string[] = process.argv.slice(2)): number {
             thug2: { kind: "string", default: "C:\\Games\\THUG2\\Game" },
             thug1: { kind: "string", default: "C:\\Games\\THUG1" },
             out: { kind: "string" },
-            ns: { kind: "string", default: common.NS },
+            ns: { kind: "string", default: "" },
             static: { kind: "flag" },
             extra: { kind: "list" },
             // compatibility profile (thug2-level-converter-core/compat): thugpro - level names as THUGPRO's THUG1 ports (default), or none

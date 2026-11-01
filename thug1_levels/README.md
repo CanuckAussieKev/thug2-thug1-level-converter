@@ -6,8 +6,7 @@ repo: the files are made from your copies each time.
 
 ## Running it
 
-Needs Node 24+ (`npm install` once), NeverScript (`tools\build_neverscript.ps1` ->
-`out\neverscript\ns.exe`) and, to install the levels, thug2-content-pipeline/menu_level/make_menu_level.ts.
+Needs Node 24+ (`npm install` once), NeverScript's ns (`npx thug2-neverscript fetch`, or the decomp's `tools\build_neverscript.ps1`) and, to install the levels, thug2-content-pipeline/menu_level/make_menu_level.ts.
 
     node thug1_levels/thug1_levels.ts convert [--thug1 C:\Games\THUG1] [--thug2 C:\Games\THUG2] [--static]
          [--compat thugpro|none] [--legacy-names]
