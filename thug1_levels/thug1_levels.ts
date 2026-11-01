@@ -36,7 +36,7 @@ import * as thug2Scene from "thug2-level-converter-core/level_port/thug2_scene.t
 import { parseConverterArgs } from "thug2-level-converter-core/lib/converter_args.ts";
 import { resolveInstall } from "thug2-level-converter-core/lib/install.ts";
 import { requireNs } from "thug2-level-converter-core/lib/neverscript.ts";
-import { hex8, isMain, print, pyExit, pyJoin, pyRepr, runMain } from "thug2-level-converter-core/lib/py.ts";
+import { hex8, isMain, print, pyExit, pyRepr, runMain } from "thug2-level-converter-core/lib/py.ts";
 import * as handEdits from "thug2-thugpro-compat/hand_edits.ts";
 import * as compat from "thug2-thugpro-compat/profile.ts";
 import { applyTextEdits, DRIVING_EDITS } from "./driving.ts";
@@ -317,7 +317,7 @@ setCompat("thugpro"); // (the default, also for the tools that import this one: 
 
 // The checksums of THUG2's own load scripts (its Levels.qb, Data\pre\qb_scripts.prx).
 export function thug2LoadScripts(thug2: string): Set<number> {
-    const data = prx.find(pyJoin(thug2, "Data", "pre", "qb_scripts.prx"), "scripts\\game\\levels.qb");
+    const data = prx.find(path.join(thug2, "Data", "pre", "qb_scripts.prx"), "scripts\\game\\levels.qb");
     if (data === null) throw new TypeError(`${thug2}: no scripts\\game\\levels.qb in qb_scripts.prx`);
     return new Set(new qb.QbFile(data, "Levels.qb", true).scripts.keys());
 }
@@ -364,11 +364,11 @@ export function levelNames(thug1: string, thug2: string, legacy = false): Map<st
 }
 
 export function prePath(args: { thug1: string }, name: string): string | null {
-    const file = pyJoin(resolveInstall(args.thug1, "thug1"), "Data", "pre", name);
+    const file = path.join(resolveInstall(args.thug1, "thug1"), "Data", "pre", name);
     if (fs.existsSync(file)) return file;
     const folder = path.win32.dirname(file);
     for (const entry of fs.readdirSync(folder)) {
-        if (entry.toLowerCase() === name.toLowerCase()) return pyJoin(folder, entry);
+        if (entry.toLowerCase() === name.toLowerCase()) return path.join(folder, entry);
     }
     return null;
 }
@@ -814,7 +814,7 @@ export function convertLevelNodes(
     const [stripped, cleared] = nodes.stripMissingTrickObjects(text, sectors);
     text = stripped;
     fs.mkdirSync(outDir, { recursive: true });
-    const qbPath = pyJoin(outDir, `${name}.qb`);
+    const qbPath = path.join(outDir, `${name}.qb`);
     // (network games: path followers, peds and cars kept out - no path manager or ped animations there -, restarts for the players)
     // (nodes.netGameNodes, its two parts: PC-THUG1-14 required, PC-THUG1-2 our own change - port_changes.ts)
     pc.required("PC-THUG1-14");
@@ -893,7 +893,7 @@ export function drivingScripts(port: thug1Port.Thug1Port, qbPre: string, out: st
         }
         const source = new scriptPort.Source(data, path.win32.basename(file).toLowerCase(), true);
         for (const name of source.scripts.keys()) port.driving.add(name);
-        const target = pyJoin(out, file);
+        const target = path.join(out, ...file.split(/[\\/]/));
         fs.mkdirSync(path.win32.dirname(target), { recursive: true });
         const edits = DRIVING_EDITS[file.toLowerCase()];
         if (edits === undefined) {
@@ -924,7 +924,7 @@ function title(text: string): string {
 }
 
 export function cmdConvert(args: Args): void {
-    const out = args.out || pyJoin(args.thug2, STAGING);
+    const out = args.out || path.join(args.thug2, STAGING);
     args.ns = requireNs(args.ns); // (--ns, NEVERSCRIPT, ... or `npx thug2-neverscript fetch` - lib/neverscript.ts)
     if (!prePath(args, "qb.pre")) pyExit(`${args.thug1}: THUG1's Data\\pre not found`);
     const structs = levelStructs(args);
@@ -972,7 +972,7 @@ export function cmdConvert(args: Args): void {
                         bad.add(base);
                         continue;
                     }
-                    const target = pyJoin(out, e.target);
+                    const target = path.join(out, ...e.target.split(/[\\/]/));
                     fs.mkdirSync(path.win32.dirname(target), { recursive: true });
                     fs.writeFileSync(target, data);
                 }
@@ -985,7 +985,7 @@ export function cmdConvert(args: Args): void {
     const modelOk = (model: string): boolean => {
         const k = model.toLowerCase().replaceAll("/", "\\");
         if (okModels.has(k)) return true;
-        const file = pyJoin(args.thug2, "Data", "models", `${k}.xbx`);
+        const file = path.join(args.thug2, "Data", "models", `${k}.xbx`);
         return fs.existsSync(file);
     };
     const manifest: { levels: Record<string, unknown>[] } = { levels: [] };
@@ -1035,7 +1035,7 @@ export function cmdConvert(args: Args): void {
                 );
                 continue;
             }
-            const target = pyJoin(out, e.target.replaceAll("<level>", name));
+            const target = path.join(out, ...e.target.replaceAll("<level>", name).split(/[\\/]/));
             fs.mkdirSync(path.win32.dirname(target), { recursive: true });
             fs.writeFileSync(target, data);
             nodeReport.push(
@@ -1054,7 +1054,7 @@ export function cmdConvert(args: Args): void {
         const skyCode = typeof skyValue === "string" ? skyValue : `${code}_sky`;
         if (files.has(`${baseOf(skyCode)}.scn.xbx`)) {
             sky = skyName(code, name, skyCode);
-            convertGeometry(files, skyCode, pyJoin(out, "levels", sky), sky, report);
+            convertGeometry(files, skyCode, path.join(out, "levels", sky), sky, report);
         }
         const structName = struct?.get("name");
         const display = typeof structName === "string" ? structName : title(sign);
@@ -1075,7 +1075,7 @@ export function cmdConvert(args: Args): void {
         for (const [k, v] of starts) entry[k] = v; // (startup_script / setup_script: THUG1's own, brought along)
         manifest.levels.push(entry);
     }
-    portedLevels.writeManifest(pyJoin(out, portedLevels.MANIFEST), manifest);
+    portedLevels.writeManifest(path.join(out, portedLevels.MANIFEST), manifest);
     if (port?.peds) {
         // (THUG1's own people the levels use: their models, animations and the profile / CAS additions - peds.json)
         report.push(port.peds.write(out));
@@ -1097,7 +1097,7 @@ export const SKIN_CHECKS = [
 ];
 
 export function cmdSelfcheck(args: Args): number {
-    const pre = pyJoin(args.thug2, "Data", "pre");
+    const pre = path.join(args.thug2, "Data", "pre");
     let [checked, failures] = common.thug2RoundTrips(pre, [
         "LAscn.prx",
         "LAcol.prx",
@@ -1108,7 +1108,7 @@ export function cmdSelfcheck(args: Args): number {
     // THUG2's own ped skins written again by the skinned-mesh writer from what its reader makes of them
     // (thug2_scene.rewriteSkin): byte-identical.
     for (const skin of SKIN_CHECKS) {
-        const file = pyJoin(args.thug2, "Data", "models", skin);
+        const file = path.join(args.thug2, "Data", "models", ...skin.split(/[\\/]/));
         try {
             const data = fs.readFileSync(file);
             const again = thug2Scene.writeScene(thug2Scene.rewriteSkin(thug2Scene.readScene(data, skin)));
@@ -1124,14 +1124,14 @@ export function cmdSelfcheck(args: Args): number {
             failures += 1;
         }
     }
-    const thug1Pre = pyJoin(resolveInstall(args.thug1, "thug1"), "Data", "pre");
+    const thug1Pre = path.join(resolveInstall(args.thug1, "thug1"), "Data", "pre");
     // THUG1's ped skins (the <LV>ped.pre archives): to THUG2's form on a 55-bone skeleton, and that read back and
     // written again the same.
     const skins = new Set<string>();
     for (const archive of fs.readdirSync(thug1Pre).sort()) {
         if (!archive.toLowerCase().endsWith("ped.pre")) continue;
         const isSkin = (n: string): boolean => n.toLowerCase().endsWith(".skin.xbx") && !skins.has(n.toLowerCase());
-        for (const [name, data] of prx.entries(pyJoin(thug1Pre, archive), isSkin)) {
+        for (const [name, data] of prx.entries(path.join(thug1Pre, archive), isSkin)) {
             skins.add(name.toLowerCase());
             try {
                 const out = thug2Scene.writeScene(thug1.toThug2Skin(thug1.readScene(data, name), name, 55));
@@ -1148,7 +1148,7 @@ export function cmdSelfcheck(args: Args): number {
     print(`ok   ${skins.size} THUG1 ped skins made THUG2's`);
     // THUG1's animations with their standard-key table keys written out (thug1.untableAnim): every one, and the
     // result has none left (written out again: the same bytes).
-    const bits = pyJoin(thug1Pre, "Bits.pre");
+    const bits = path.join(thug1Pre, "Bits.pre");
     const qTable = prx.find(bits, "anims\\standardkeyQ.bin");
     const tTable = prx.find(bits, "anims\\standardkeyT.bin");
     if (qTable === null || tTable === null) {
@@ -1160,7 +1160,7 @@ export function cmdSelfcheck(args: Args): number {
             if (!archive.toLowerCase().endsWith(".pre")) continue;
             // (the objects' animations: anims\...; the levels' camera paths are another format)
             const isAnim = (n: string): boolean => /^anims[\\/].*\.ska\.xbx$/i.test(n) && !anims.has(n.toLowerCase());
-            for (const [name, data] of prx.entries(pyJoin(thug1Pre, archive), isAnim)) {
+            for (const [name, data] of prx.entries(path.join(thug1Pre, archive), isAnim)) {
                 anims.add(name.toLowerCase());
                 try {
                     const out = thug1.untableAnim(data, qTable, tTable, name);
@@ -1181,7 +1181,7 @@ export function cmdSelfcheck(args: Args): number {
         const lowArchive = archive.toLowerCase();
         if (!lowArchive.endsWith(".pre") || lowArchive === "qb.pre") continue;
         const inLevels = (n: string): boolean => n.toLowerCase().replaceAll("/", "\\").startsWith("levels\\");
-        for (const [name, data] of prx.entries(pyJoin(thug1Pre, archive), inLevels)) {
+        for (const [name, data] of prx.entries(path.join(thug1Pre, archive), inLevels)) {
             const low = name.toLowerCase();
             let what: string;
             try {
@@ -1233,7 +1233,7 @@ export function main(argv: readonly string[] = process.argv.slice(2)): number {
             "legacy-names": { kind: "flag" }, // thug1_<code> for every level, as before
             // what is new in THUGPRO (thugpro_new: TPN-THUG1-1 ... TPN-THUG1-4) is read from its install; --no-thugpro-new leaves
             // it out (the hand edits TP-30 ... TP-39 stay)
-            thugpro: { kind: "string", default: pyJoin(process.env.LOCALAPPDATA ?? "", "THUG Pro") },
+            thugpro: { kind: "string", default: path.join(process.env.LOCALAPPDATA ?? "", "THUG Pro") },
             "no-thugpro-new": { kind: "flag" },
             // our own changes that THUG2 doesn't need to load the level off (port_changes.ts)
             "no-port-changes": { kind: "flag" },

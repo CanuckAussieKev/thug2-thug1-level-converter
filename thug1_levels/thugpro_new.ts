@@ -93,7 +93,7 @@ export class Install {
     archive(rel: string): Map<string, Buffer> | null {
         const key = rel.toLowerCase();
         if (!this.archives.has(key)) {
-            const file = path.join(this.root, rel);
+            const file = path.join(this.root, ...rel.split(/[\\/]/));
             let files: Map<string, Buffer> | null = null;
             if (fs.existsSync(file)) {
                 files = new Map();
@@ -109,7 +109,7 @@ export class Install {
         let data: Buffer | undefined;
         const archive = e.archive ?? level.archive;
         if (e.kind === "asset" && e.archive === undefined && e.file?.toLowerCase().startsWith("data\\models\\")) {
-            const file = path.join(this.root, e.file);
+            const file = path.join(this.root, ...e.file.split(/[\\/]/));
             if (!fs.existsSync(file)) return `${e.file} not in THUGPRO's install`;
             data = fs.readFileSync(file);
         } else {
@@ -604,7 +604,7 @@ export function extract(x: ExtractInputs): Extracted {
                 .readdirSync(path.join(x.install.root, "data", "models", ...dir.slice(0, -1)))
                 .find((d) => d.toLowerCase() === dir.at(-1));
             const file = ["data", "models", ...dir.slice(0, -1), realDir ?? dir.at(-1)!, f].join("\\");
-            const data = fs.readFileSync(path.join(x.install.root, file));
+            const data = fs.readFileSync(path.join(x.install.root, ...file.split(/[\\/]/)));
             entries.push({
                 id: IDS.asset,
                 kind: "asset",

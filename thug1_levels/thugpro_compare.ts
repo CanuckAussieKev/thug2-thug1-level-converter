@@ -41,7 +41,6 @@ import {
     hex8,
     isMain,
     print,
-    pyJoin,
     pyJsonDumps,
     pyRound,
     runMain,
@@ -74,7 +73,7 @@ import {
 } from "./thugpro_edits.ts";
 import * as thugproNew from "./thugpro_new.ts";
 
-const DEFAULT_THUGPRO = pyJoin(process.env.LOCALAPPDATA ?? "", "THUG Pro");
+const DEFAULT_THUGPRO = path.join(process.env.LOCALAPPDATA ?? "", "THUG Pro");
 // The game-mode nodes THUG2's scripts look up by name: CTF bases / flags, their restarts, the team restart.
 export const MODE_NAMES = [
     ...CTF_NAMES,
@@ -93,7 +92,7 @@ interface TheirLevel {
 }
 
 export function thugproLevels(thugpro: string): TheirLevel[] {
-    const archive = pyJoin(thugpro, "data", "pre", "thugpro_qb.prx");
+    const archive = path.join(thugpro, "data", "pre", "thugpro_qb.prx");
     const data = fs.existsSync(archive) ? prx.find(archive, "qb\\game\\levels.qb") : null;
     if (data === null) return [];
     const q = new qb.QbFile(data, "Levels.qb", true);
@@ -177,14 +176,14 @@ export function compare(
     out.thugpro_level = key;
     out.thugpro_load = them.loadText;
     out.same_name = qb.checksum(`Load_${mine}`) === them.load;
-    const oursQb = pyJoin(oursDir, mine, `${mine}.qb`);
+    const oursQb = path.join(oursDir, mine, `${mine}.qb`);
     if (!fs.existsSync(oursQb)) {
         out.error = `not converted (${oursQb})`;
         return out;
     }
     const [oursArray, names] = nodeArray(fs.readFileSync(oursQb), oursQb);
     const oursQbFile = new qb.QbFile(fs.readFileSync(oursQb), oursQb, true);
-    const scripts = pyJoin(thugpro, "data", "pre", `${key}_scripts.prx`);
+    const scripts = path.join(thugpro, "data", "pre", `${key}_scripts.prx`);
     if (!fs.existsSync(scripts)) {
         out.error = `THUGPRO's ${them.loadText} (game=${them.game}) is THUG2's own level, not a port (no ${key}_scripts.prx)`;
         return out;
@@ -285,7 +284,7 @@ export function compare(
     const ourDefined = new Set(oursQbFile.scripts.keys());
     out.scripts = [ourDefined.size, theirDefined.size];
     // collision
-    const ourCol = pyJoin(oursDir, mine, `${mine}.col.xbx`);
+    const ourCol = path.join(oursDir, mine, `${mine}.col.xbx`);
     let ourColFile: thug2Col.ColFile | null = null;
     if (fs.existsSync(ourCol)) {
         ourColFile = thug2Col.readCol(fs.readFileSync(ourCol), ourCol);
@@ -309,7 +308,7 @@ export function compare(
             (e) => install.read(fresh, e),
         );
     }
-    const theirCol = pyJoin(thugpro, "data", "pre", `${key}col.prx`);
+    const theirCol = path.join(thugpro, "data", "pre", `${key}col.prx`);
     if (fs.existsSync(theirCol)) {
         for (const [name, cdata] of colCheck.colFiles(theirCol)) {
             const [faces, missing] = colCheck.check(thug2Col.readCol(cdata, name));
@@ -346,7 +345,7 @@ function portKeys(thug1: string, thugpro: string, codes: readonly string[]): Map
     for (const code of codes) {
         const nm = structs.get(code.toLowerCase())?.get("name");
         const them = theirLevel(all, code, typeof nm === "string" ? nm : "");
-        if (them && fs.existsSync(pyJoin(thugpro, "data", "pre", `${them.level}_scripts.prx`)))
+        if (them && fs.existsSync(path.join(thugpro, "data", "pre", `${them.level}_scripts.prx`)))
             out.set(code, them.level);
     }
     return out;
@@ -398,7 +397,7 @@ function extractNew(
     const listing = fs.existsSync(pre) ? fs.readdirSync(pre) : [];
     for (const [code, key] of portKeys(thug1, thugpro, codes)) {
         const level = mine.get(code.toLowerCase()) ?? `thug1_${code.toLowerCase()}`;
-        const oursQb = pyJoin(staging, level, `${level}.qb`);
+        const oursQb = path.join(staging, level, `${level}.qb`);
         let ours: { scripts: Set<number>; nodes: Set<number> } | null = null;
         if (fs.existsSync(oursQb)) {
             const data = fs.readFileSync(oursQb);
@@ -536,9 +535,9 @@ export function main(argv: readonly string[] = process.argv.slice(2)): number {
         const wanted = parsed.positionals.length
             ? parsed.positionals.map((c) => BY_CODE.get(c.toLowerCase())?.[0] ?? c)
             : LEVELS.filter((l) => l[5]).map((l) => l[0]);
-        return extract(thug1, thugpro, wanted, thug2, v.staging || pyJoin(thug2, STAGING, "levels"));
+        return extract(thug1, thugpro, wanted, thug2, v.staging || path.join(thug2, STAGING, "levels"));
     }
-    const oursDir = v.staging || pyJoin(thug2, STAGING, "levels");
+    const oursDir = v.staging || path.join(thug2, STAGING, "levels");
     const mineByCode = levelNames(thug1, thug2, v["legacy-names"] ?? false);
     const t1structs = levelStructs({ thug1 });
     const all = thugproLevels(thugpro);

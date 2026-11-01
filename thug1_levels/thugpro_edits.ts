@@ -9,13 +9,14 @@
 //     scripts, scene sectors, collision objects), for the user to decide on.
 // Used by thugpro_compare.ts (--extract-thugpro, --details).
 
+import * as path from "node:path";
 import { NET_RESTART_TYPES, THUG2_TERRAINS } from "thug2-level-converter-core/level_port/nodes.ts";
 import * as prx from "thug2-level-converter-core/level_port/prx.ts";
 import * as qb from "thug2-level-converter-core/level_port/qb.ts";
 import { Name, type QbValue, Struct, Vector } from "thug2-level-converter-core/level_port/qb.ts";
 import * as thug2Col from "thug2-level-converter-core/level_port/thug2_col.ts";
 import * as thug2Scene from "thug2-level-converter-core/level_port/thug2_scene.ts";
-import { hex8, pyJoin } from "thug2-level-converter-core/lib/py.ts";
+import { hex8 } from "thug2-level-converter-core/lib/py.ts";
 import * as handEditsLib from "thug2-thugpro-compat/hand_edits.ts";
 import { maxDiff, nodeArray, position, TOLERANCE } from "thug2-thugpro-compat/thugpro_nodes.ts";
 import * as thug1 from "./thug1.ts";
@@ -61,7 +62,7 @@ export function thug1Side(thug1: string, code: string): Side {
 }
 
 export function thugproSide(thugpro: string, key: string): Side {
-    const pre = (f: string): string => pyJoin(thugpro, "data", "pre", f);
+    const pre = (f: string): string => path.join(thugpro, "data", "pre", f);
     const qbs = qbFiles(pre(`${key}_scripts.prx`), key);
     return sideOf(qbs, `levels\\${key}\\${key}.qb`, pre(`${key}scn.prx`), pre(`${key}col.prx`));
 }

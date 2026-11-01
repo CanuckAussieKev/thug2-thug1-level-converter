@@ -558,7 +558,7 @@ export class Thug1Peds {
             if (raw === null) throw new Error(`THUG1's ${theirs}.xbx isn't in its archives`);
             // (THUG1's standard-key table keys written out: THUG2's tables differ - thug1.untableAnim)
             const data = thug1.untableAnim(raw, tables.q, tables.t, theirs);
-            const target = path.join(staging, `${ours}.xbx`);
+            const target = path.join(staging, ...`${ours}.xbx`.split(/[\\/]/));
             fs.mkdirSync(path.dirname(target), { recursive: true });
             fs.writeFileSync(target, data);
             bytes += data.length;
