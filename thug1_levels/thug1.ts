@@ -20,7 +20,8 @@ import { FormatError, Reader } from "thug2-level-converter-core/level_port/binio
 import { pixelShader, type SourceSector } from "thug2-level-converter-core/level_port/geometry.ts";
 import * as thug2Col from "thug2-level-converter-core/level_port/thug2_col.ts";
 import * as thug2Scene from "thug2-level-converter-core/level_port/thug2_scene.ts";
-import { hex8, pyMax } from "thug2-level-converter-core/lib/py.ts";
+import { maxOf } from "thug2-level-converter-core/lib/numbers.ts";
+import { hex8 } from "thug2-level-converter-core/lib/text.ts";
 
 export const COL_VERSION = 9;
 
@@ -89,7 +90,7 @@ export function readSector(r: Reader): Sector {
         if (lodCount > 8) throw new FormatError(`${r.name}: ${lodCount} LODs at 0x${hex(r.offset)}`);
         const lods = times(lodCount, () => r.read(`${r.u32()}H`));
         for (const indices of lods) {
-            if (indices.length && pyMax(indices) >= count) {
+            if (indices.length && maxOf(indices) >= count) {
                 throw new FormatError(`${r.name}: sector ${hex8(checksum)} strip index past its ${count} vertices`);
             }
         }

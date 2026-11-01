@@ -13,8 +13,7 @@
 import * as fs from "node:fs";
 import { parseArgs } from "node:util";
 import { checksum } from "thug2-level-converter-core/level_port/qb.ts";
-import { helpFromHeader } from "thug2-level-converter-core/lib/cli.ts";
-import { isMain, print, pyExit, runMain } from "thug2-level-converter-core/lib/py.ts";
+import { exitWith, helpFromHeader, isMain, print, runMain } from "thug2-level-converter-core/lib/cli.ts";
 import { exeTables } from "./script_gap.ts";
 
 interface Fn {
@@ -116,7 +115,7 @@ function main(argv: string[]): number {
             checksum: { type: "string", multiple: true, default: [] },
         },
     });
-    if (!fs.existsSync(values.functions)) pyExit(`no ${values.functions}: run thug1_campaign/thug1_functions.py`);
+    if (!fs.existsSync(values.functions)) exitWith(`no ${values.functions}: run thug1_campaign/thug1_functions.py`);
     const graph = new CallGraph(JSON.parse(fs.readFileSync(values.functions, "utf-8")) as Fn[]);
     const tables = exeTables(values.exe);
     const exe = fs.readFileSync(values.exe);

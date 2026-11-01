@@ -41,10 +41,10 @@ import { parseArgs } from "node:util";
 import * as prx from "thug2-level-converter-core/level_port/prx.ts";
 import { checksum, type Token, tokens } from "thug2-level-converter-core/level_port/qb.ts";
 import { NAMED_MEMBERS, TABLE_MEMBERS } from "thug2-level-converter-core/level_port/thug2_members.ts";
-import { helpFromHeader } from "thug2-level-converter-core/lib/cli.ts";
+import { exitWith, helpFromHeader, isMain, print, runMain } from "thug2-level-converter-core/lib/cli.ts";
 import { REFERENCE_EXE } from "thug2-level-converter-core/lib/decomp.ts";
 import { findCaseless, resolveInstall } from "thug2-level-converter-core/lib/install.ts";
-import { decodeLatin1, isMain, print, pyExit, runMain } from "thug2-level-converter-core/lib/py.ts";
+import { decodeLatin1 } from "thug2-level-converter-core/lib/text.ts";
 
 // --- tokens -----------------------------------------------------------------------------------------------------
 
@@ -417,7 +417,7 @@ function* looseQb(folder: string, rel = ""): Generator<[string, Buffer]> {
 
 export function readThug1(game: string): { set: ScriptSet; files: [string, Buffer][] } {
     const pre = findCaseless(game, "Data", "pre");
-    if (pre === null) pyExit(`${game}: no Data\\pre`);
+    if (pre === null) exitWith(`${game}: no Data\\pre`);
     const set = new ScriptSet();
     const files: [string, Buffer][] = [];
     const seen = new Set<string>();
@@ -447,11 +447,11 @@ export interface Thug2 {
 
 export function readThug2(game: string, cfuncsCsv: string, exe: string): Thug2 {
     const pre = findCaseless(game, "Data", "pre");
-    if (pre === null) pyExit(`${game}: no Data\\pre`);
+    if (pre === null) exitWith(`${game}: no Data\\pre`);
     const global = new ScriptSet();
     const all = new ScriptSet();
     const qbPrx = findCaseless(pre, "qb_scripts.prx");
-    if (qbPrx === null) pyExit(`${game}: no Data\\pre\\qb_scripts.prx`);
+    if (qbPrx === null) exitWith(`${game}: no Data\\pre\\qb_scripts.prx`);
     const loose = findCaseless(game, "Data", "scripts");
     const seen = new Set<string>();
     // The loose files first: the game reads qdir.txt's after qb_scripts.prx (the later definition wins).
@@ -479,7 +479,7 @@ export function readThug2(game: string, cfuncsCsv: string, exe: string): Thug2 {
             .filter((l) => l.includes(","))
             .map((l) => [l.split(",")[1]!.trim(), parseInt(l.split(",")[0]!, 16)]);
     } else {
-        if (!fs.existsSync(exe)) pyExit(`no ${cfuncsCsv} and no ${exe} to make it from (tools/extract_cfuncs.ts)`);
+        if (!fs.existsSync(exe)) exitWith(`no ${cfuncsCsv} and no ${exe} to make it from (tools/extract_cfuncs.ts)`);
         rows = [...exeTables(exe).cfuncs];
     }
     const cfuncs = new Set<number>();
@@ -1067,7 +1067,7 @@ function main(argv: string[]): number {
     const thug1 = resolveInstall(values.thug1, "thug1");
     const thug2 = resolveInstall(values.thug2, "thug2");
     const t1ExePath = values["thug1-exe"] ?? findCaseless(thug1, "THUG.exe") ?? findCaseless(thug1, "THUGPM.exe");
-    if (!t1ExePath) pyExit(`${thug1}: no THUG.exe`);
+    if (!t1ExePath) exitWith(`${thug1}: no THUG.exe`);
     const t1Exe = exeTables(t1ExePath);
     const t1 = readThug1(thug1);
     if (values.dump) dump(t1.files, values.dump, values.ns);

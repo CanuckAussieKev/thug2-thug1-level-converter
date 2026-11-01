@@ -30,7 +30,7 @@ import * as prx from "thug2-level-converter-core/level_port/prx.ts";
 import * as qb from "thug2-level-converter-core/level_port/qb.ts";
 import { checksum, Name, Struct } from "thug2-level-converter-core/level_port/qb.ts";
 import * as scriptPort from "thug2-level-converter-core/level_port/script_port.ts";
-import { decodeLatin1, hex8 } from "thug2-level-converter-core/lib/py.ts";
+import { decodeLatin1, hex8 } from "thug2-level-converter-core/lib/text.ts";
 import { Thug1Peds } from "./thug1_peds.ts";
 
 // THUG1's shared script files a level's scripts may be brought along from (besides the level's own .qb files).

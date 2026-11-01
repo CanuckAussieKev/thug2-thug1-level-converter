@@ -33,10 +33,11 @@ import * as scriptPort from "thug2-level-converter-core/level_port/script_port.t
 import * as staging from "thug2-level-converter-core/level_port/staging.ts";
 import * as tex from "thug2-level-converter-core/level_port/tex.ts";
 import * as thug2Scene from "thug2-level-converter-core/level_port/thug2_scene.ts";
+import { exitWith, isMain, print, runMain } from "thug2-level-converter-core/lib/cli.ts";
 import { parseConverterArgs } from "thug2-level-converter-core/lib/converter_args.ts";
 import { resolveInstall } from "thug2-level-converter-core/lib/install.ts";
 import { requireNs } from "thug2-level-converter-core/lib/neverscript.ts";
-import { hex8, isMain, print, pyExit, pyRepr, runMain } from "thug2-level-converter-core/lib/py.ts";
+import { hex8, valueText } from "thug2-level-converter-core/lib/text.ts";
 import * as handEdits from "thug2-thugpro-compat/hand_edits.ts";
 import * as compat from "thug2-thugpro-compat/profile.ts";
 import { applyTextEdits, DRIVING_EDITS } from "./driving.ts";
@@ -856,7 +857,7 @@ export function convertLevelNodes(
 
     writeQb(text);
     report.push(
-        `  nodes: ${converted.length} of ${array.length} kept ${pyRepr(stats)}; ${triggers.size} kill zones; ` +
+        `  nodes: ${converted.length} of ${array.length} kept ${valueText(stats)}; ${triggers.size} kill zones; ` +
             `TrickObject taken off ${cleared} geometry nodes without a sector`,
     );
     if (made !== null) {
@@ -906,7 +907,7 @@ export function drivingScripts(port: thug1Port.Thug1Port, qbPre: string, out: st
                 fs.writeFileSync(qbFile, data);
                 const result = spawnSync(ns, ["-d", qbFile, "-o", nsFile]);
                 if (result.error) throw result.error;
-                if (result.status !== 0 || !fs.existsSync(nsFile)) pyExit(`ns couldn't decompile THUG1's ${file}`);
+                if (result.status !== 0 || !fs.existsSync(nsFile)) exitWith(`ns couldn't decompile THUG1's ${file}`);
                 const text = fs.readFileSync(nsFile, "latin1");
                 common.nsCompile(ns, applyTextEdits(text, edits, file), target);
             } finally {
@@ -926,7 +927,7 @@ function title(text: string): string {
 export function cmdConvert(args: Args): void {
     const out = args.out || path.join(args.thug2, STAGING);
     args.ns = requireNs(args.ns); // (--ns, NEVERSCRIPT, ... or `npx thug2-neverscript fetch` - lib/neverscript.ts)
-    if (!prePath(args, "qb.pre")) pyExit(`${args.thug1}: THUG1's Data\\pre not found`);
+    if (!prePath(args, "qb.pre")) exitWith(`${args.thug1}: THUG1's Data\\pre not found`);
     const structs = levelStructs(args);
     setCompat(args.compat, !args.noThugproNew, !args.noPortChanges);
     for (const [id, what] of portChanges.IMPLEMENTED) {
@@ -993,7 +994,7 @@ export function cmdConvert(args: Args): void {
     for (const requested of wanted) {
         const info = BY_CODE.get(requested.toLowerCase());
         if (!info) {
-            pyExit(`${requested}: not a THUG1 level this tool knows (${LEVELS.map((c) => c[0]).join(", ")})`);
+            exitWith(`${requested}: not a THUG1 level this tool knows (${LEVELS.map((c) => c[0]).join(", ")})`);
         }
         const [code, sign, location, icon, levelNum] = info;
         print("converting", code);
@@ -1262,7 +1263,7 @@ export function main(argv: readonly string[] = process.argv.slice(2)): number {
         process.stderr.write(
             `thug1_levels.ts: error: argument --compat: invalid choice: '${args.compat}' (choose from ${compat.PROFILES.join(", ")})\n`,
         );
-        pyExit(2);
+        exitWith(2);
     }
     // (the install root or the game folder itself: C:\Games\THUG2 -> C:\Games\THUG2\Game - thug2-level-converter-core/lib/install.ts)
     args.thug2 = resolveInstall(args.thug2, "thug2");

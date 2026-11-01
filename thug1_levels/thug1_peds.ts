@@ -36,7 +36,7 @@ import * as qb from "thug2-level-converter-core/level_port/qb.ts";
 import { checksum, Name, Struct } from "thug2-level-converter-core/level_port/qb.ts";
 import * as thug2Col from "thug2-level-converter-core/level_port/thug2_col.ts";
 import * as thug2Scene from "thug2-level-converter-core/level_port/thug2_scene.ts";
-import { decodeLatin1, hex8 } from "thug2-level-converter-core/lib/py.ts";
+import { decodeLatin1, hex8 } from "thug2-level-converter-core/lib/text.ts";
 import * as thug1 from "./thug1.ts";
 
 export { pedAiAnims, Thug2Globals }; // (level_port/ped_ai.ts since the split)
