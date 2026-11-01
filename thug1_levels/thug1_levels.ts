@@ -21,6 +21,7 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import * as compat from "thug2-level-converter-core/compat/compat.ts";
+import * as handEdits from "thug2-level-converter-core/compat/hand_edits.ts";
 import { FormatError } from "thug2-level-converter-core/level_port/binio.ts";
 import * as common from "thug2-level-converter-core/level_port/common.ts";
 import * as geometry from "thug2-level-converter-core/level_port/geometry.ts";
@@ -37,7 +38,6 @@ import { parseConverterArgs } from "thug2-level-converter-core/lib/converter_arg
 import { resolveInstall } from "thug2-level-converter-core/lib/install.ts";
 import { hex8, isMain, print, pyExit, pyJoin, pyRepr, runMain } from "thug2-level-converter-core/lib/py.ts";
 import { applyTextEdits, DRIVING_EDITS } from "./driving.ts";
-import * as handEdits from "./hand_edits.ts";
 import * as portChanges from "./port_changes.ts";
 import * as thug1 from "./thug1.ts";
 import * as thug1Port from "./thug1_port.ts";

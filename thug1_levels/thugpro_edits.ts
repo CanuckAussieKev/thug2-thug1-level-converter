@@ -9,6 +9,7 @@
 //     scripts, scene sectors, collision objects), for the user to decide on.
 // Used by thugpro_compare.ts (--extract-thugpro, --details).
 
+import * as handEditsLib from "thug2-level-converter-core/compat/hand_edits.ts";
 import { maxDiff, nodeArray, position, TOLERANCE } from "thug2-level-converter-core/compat/thugpro_nodes.ts";
 import { NET_RESTART_TYPES, THUG2_TERRAINS } from "thug2-level-converter-core/level_port/nodes.ts";
 import * as prx from "thug2-level-converter-core/level_port/prx.ts";
@@ -17,7 +18,6 @@ import { Name, type QbValue, Struct, Vector } from "thug2-level-converter-core/l
 import * as thug2Col from "thug2-level-converter-core/level_port/thug2_col.ts";
 import * as thug2Scene from "thug2-level-converter-core/level_port/thug2_scene.ts";
 import { hex8, pyJoin } from "thug2-level-converter-core/lib/py.ts";
-import * as handEditsLib from "./hand_edits.ts";
 import * as thug1 from "./thug1.ts";
 import { FACE_KEEP, prePath } from "./thug1_levels.ts";
 

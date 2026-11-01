@@ -5,9 +5,6 @@
 
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { checksum, Name, type QbValue, Struct, Vector } from "thug2-level-converter-core/level_port/qb.ts";
-import type * as thug2Col from "thug2-level-converter-core/level_port/thug2_col.ts";
-import { Float } from "thug2-level-converter-core/lib/py.ts";
 import {
     applyColEdits,
     applyNodeEdits,
@@ -16,7 +13,10 @@ import {
     editCounts,
     encode,
     type LevelEdits,
-} from "./hand_edits.ts";
+} from "thug2-level-converter-core/compat/hand_edits.ts";
+import { checksum, Name, type QbValue, Struct, Vector } from "thug2-level-converter-core/level_port/qb.ts";
+import type * as thug2Col from "thug2-level-converter-core/level_port/thug2_col.ts";
+import { Float } from "thug2-level-converter-core/lib/py.ts";
 import { formatJson } from "./thugpro_compare.ts";
 
 const names = (): Map<number, string> => new Map();

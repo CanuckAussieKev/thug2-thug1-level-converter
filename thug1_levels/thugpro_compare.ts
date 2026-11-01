@@ -28,6 +28,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as compat from "thug2-level-converter-core/compat/compat.ts";
+import { checkEdits, editCounts, SECTIONS, type SectionCheck } from "thug2-level-converter-core/compat/hand_edits.ts";
 import {
     CTF_NAMES,
     isCrown,
@@ -60,7 +61,6 @@ import {
     runMain,
     writeTextPy,
 } from "thug2-level-converter-core/lib/py.ts";
-import { checkEdits, editCounts, SECTIONS, type SectionCheck } from "./hand_edits.ts";
 import { BY_CODE, COMPAT, LEVELS, levelNames, levelStructs, prePath, STAGING, setCompat } from "./thug1_levels.ts";
 import {
     handEdits,
